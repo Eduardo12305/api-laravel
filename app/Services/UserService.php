@@ -101,4 +101,36 @@ class UserService
             'data' => $register,
         ];
     }
+
+    public function index()
+{
+    // Obter a referência da tabela
+    $reference = $this->database->getReference($this->tablename);
+
+    // Obter todos os dados da referência
+    $snapshot = $reference->getSnapshot();
+
+    // Verificar se há dados
+    if (!$snapshot->exists()) {
+        return [
+            'status' => 'error',
+            'message' => 'Nenhum usuário encontrado.',
+        ];
+    }
+
+    // Obter todos os dados como um array
+    $data = $snapshot->getValue();
+
+    // Converter IDs para números
+    $numericData = [];
+    foreach ($data as $key => $value) {
+        $numericData[intval($key)] = $value;
+    }
+
+    return [
+        'status' => 'success',
+        'data' => $numericData,
+    ];
+}
+
 }

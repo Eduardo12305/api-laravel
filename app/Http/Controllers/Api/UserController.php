@@ -61,4 +61,14 @@ class UserController extends Controller
         return response()->json($response);
     }
 
+    public function busc(){
+        $result = $this->userService->index();
+
+        if ($result['status'] == 'success'){
+            return response()->json($result['data']);
+        }
+
+        return response()->json(['message' => $result['message']], 404);
+    }
+
 }
