@@ -25,6 +25,15 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
+            'cpf' => 'required|string|size:11',
+        ];
+    }
+
+    public function messages() {
+        return [
+            'password.confirmed' => 'A confirmção de senha não corresponde.',
+            'cpf.unique' => 'Ja existe um usuario com este CPF',
         ];
     }
 }
