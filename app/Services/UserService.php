@@ -103,34 +103,43 @@ class UserService
     }
 
     public function index()
-{
-    // Obter a referência da tabela
-    $reference = $this->database->getReference($this->tablename);
-
-    // Obter todos os dados da referência
-    $snapshot = $reference->getSnapshot();
-
-    // Verificar se há dados
-    if (!$snapshot->exists()) {
+    {
+        // Obter a referência da tabela
+        $reference = $this->database->getReference($this->tablename);
+    
+        // Obter todos os dados da referência
+        $snapshot = $reference->getSnapshot();
+    
+        // Verificar se há dados
+        if (!$snapshot->exists()) {
+            return [
+                'status' => 'error',
+                'message' => 'Nenhum usuário encontrado.',
+            ];
+        }
+    
+        // Obter todos os dados como um array
+        $data = $snapshot->getValue();
+    
+        // Verificar se os dados são um array associativo
+        if (!is_array($data)) {
+            return [
+                'status' => 'error',
+                'message' => 'Formato de dados inválido.',
+            ];
+        }
+    
+        // Incluir IDs (chaves) no retorno, mantendo a estrutura original
+        $formattedData = [];
+        foreach ($data as $key => $value) {
+            $formattedData[$key] = $value;
+        }
+    
         return [
-            'status' => 'error',
-            'message' => 'Nenhum usuário encontrado.',
+            'status' => 'success',
+            'data' => $formattedData,
         ];
     }
-
-    // Obter todos os dados como um array
-    $data = $snapshot->getValue();
-
-    // Converter IDs para números
-    $numericData = [];
-    foreach ($data as $key => $value) {
-        $numericData[intval($key)] = $value;
-    }
-
-    return [
-        'status' => 'success',
-        'data' => $numericData,
-    ];
-}
+    
 
 }
