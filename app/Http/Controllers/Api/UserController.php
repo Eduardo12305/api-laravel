@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\LoginRequest;
 use App\Services\UserService;
 class UserController extends Controller
 {
@@ -55,12 +56,51 @@ class UserController extends Controller
     }
 
     public function store(UserRequest $request) {
+        //  CRIAR USUARIO
         // dd($request);
         $response = $this->userService->store($request);
 
         return response()->json($response);
     }
 
+    public function login(LoginRequest $request)
+    {
+        $validated = $request->validated(); // Obtém os dados validados
+
+        $email = $validated['email'];
+        $password = $validated['password'];
+
+        $result = $this->userService->loginWithEmailAndPassword($email, $password);
+
+        if ($result['status'] === 'success') {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Usuário autenticado com sucesso.',
+                'user' => $result['user']
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message']
+            ], 401);
+        }
+    }
+
+
+    public function destroy($id)
+{
+    // Chama o método delete do UserService com o ID do Firebase
+    $del = $this->userService->delete($id);
+
+    // Verifica o status retornado pelo serviço e retorna a resposta apropriada
+    if ($del['status'] === 'error') {
+        return response()->json(['message' => $del['message']], 404);
+    }
+
+    return response()->json(['message' => $del['message']], 200);
+}
+
+    // Colocar oara AdminControll se tiver
     public function busc(){
         $result = $this->userService->index();
 

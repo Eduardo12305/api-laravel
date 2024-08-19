@@ -26,7 +26,11 @@ class UserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
-            'cpf' => 'required|string|size:11',
+            'cpf' => 'required|string',
+            'cep' =>  'required|string',
+            'rg' => 'required|string',
+            // 'cnpj' => 'required|string|size:14',
+
         ];
     }
 

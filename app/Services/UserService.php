@@ -4,8 +4,7 @@ namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
 use App\Http\Requests\UserRequest;
-use Kreait\Firebase\Database\Query\Sorter\OrderByChild;
-
+use Illuminate\Support\Facades\Hash;
 class UserService
 {
     protected $database;
@@ -15,6 +14,7 @@ class UserService
     {
         $this->database = $database;
         $this->tablename = "contacts"; // Nome da tabela no Firebase
+   
     }
 
     private function isValidCPF($cpf) {
@@ -52,6 +52,25 @@ class UserService
         return ($cpf[9] == $digit1 && $cpf[10] == $digit2);
     }
 
+    public function isValidatCEP($cep) {
+        $cep = preg_replace('/\D/', '', $cep);
+        
+        if (strlen($cep) != 8) {
+            // dd($cep);
+            return false;
+        }
+    }
+
+    public function isValidatRG($rg){
+        $rg = preg_replace('/\D/', '', $rg);
+
+        if(strlen($rg) !=9) {
+            return false;
+        }
+
+
+    }
+
     public function store(UserRequest $request)
     {
         // dd($request);
@@ -60,7 +79,9 @@ class UserService
         $date = $request['date'];
         $cep = $request['cep'];
 
-        // Verificar se o CPF é válido
+
+
+        // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
             return [
                 'status' => 'error',
@@ -82,6 +103,13 @@ class UserService
             ];
         }
 
+        if ($this->isValidatCEP($cep)) {
+            return [
+                'status' => 'error',
+                'message' => 'CEP invalido.',
+            ];
+        }
+
         // Verificar se a senha e a confirmação da senha coincidem
         if ($register['password'] !== $register['password_confirmation']) {
             return [
@@ -92,6 +120,8 @@ class UserService
 
         unset($register['password_confirmation']);
 
+
+        $register['password'] = Hash::make($register['password']);
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
@@ -101,6 +131,41 @@ class UserService
             'data' => $register,
         ];
     }
+    public function loginWithEmailAndPassword($email, $password)
+{
+    // Obter a referência da tabela de usuários
+    $reference = $this->database->getReference($this->tablename);
+
+    // Buscar usuário pelo e-mail
+    $snapshot = $reference->orderByChild('email')->equalTo($email)->getSnapshot();
+
+    if (!$snapshot->exists()) {
+        return [
+            'status' => 'error',
+            'message' => 'Usuário não encontrado.',
+        ];
+    }
+
+    $userData = $snapshot->getValue();
+    $user = array_shift($userData); // Obtém o primeiro usuário da lista
+
+    // Verificar a senha
+    if (password_verify($password, $user['password'])) {
+        return [
+            'status' => 'success',
+            'message' => 'Login bem-sucedido!',
+            'user' => $user
+        ];
+    } else {
+        return [
+            'status' => 'error',
+            'message' => 'Senha incorreta.',
+        ];
+    } }
+
+    // public function login(UserRequest) {
+
+    // }
 
     public function index()
     {
@@ -140,6 +205,28 @@ class UserService
             'data' => $formattedData,
         ];
     }
-    
+
+    public function delete($id)
+{
+    // Obter a referência da tabela principal usando o ID do Firebase
+    $reference = $this->database->getReference($this->tablename . '/' . $id);
+
+    // Verificar se o usuário existe
+    $snapshot = $reference->getSnapshot();
+    if (!$snapshot->exists()) {
+        return [
+            'status' => 'error',
+            'message' => 'Usuário não encontrado.',
+        ];
+    }
+
+    // Excluir o usuário
+    $reference->remove();
+
+    return [
+        'status' => 'success',
+        'message' => 'Usuário excluído com sucesso.',
+    ];
+}
 
 }

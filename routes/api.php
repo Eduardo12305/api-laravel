@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'store']);
+Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::post('login', [UserController::class, 'login']);
 
 Route::get('busca', [UserController::class, 'busc']);
 // Route::get('/user', function (Request $request) {
