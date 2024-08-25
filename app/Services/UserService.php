@@ -52,34 +52,11 @@ class UserService
         return ($cpf[9] == $digit1 && $cpf[10] == $digit2);
     }
 
-    public function isValidatCEP($cep) {
-        $cep = preg_replace('/\D/', '', $cep);
-        
-        if (strlen($cep) != 8) {
-            // dd($cep);
-            return false;
-        }
-    }
-
-    public function isValidatRG($rg){
-        $rg = preg_replace('/\D/', '', $rg);
-
-        if(strlen($rg) !=9) {
-            return false;
-        }
-
-
-    }
-
     public function store(UserRequest $request)
     {
         // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
-        $date = $request['date'];
-        $cep = $request['cep'];
-
-
 
         // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
@@ -100,13 +77,6 @@ class UserService
             return [
                 'status' => 'error',
                 'message' => 'Já existe um usuário com este CPF.',
-            ];
-        }
-
-        if ($this->isValidatCEP($cep)) {
-            return [
-                'status' => 'error',
-                'message' => 'CEP invalido.',
             ];
         }
 
@@ -131,13 +101,12 @@ class UserService
             'data' => $register,
         ];
     }
-    public function loginWithEmailAndPassword($email, $password)
+    public function login($cpf, $password)
 {
     // Obter a referência da tabela de usuários
     $reference = $this->database->getReference($this->tablename);
-
     // Buscar usuário pelo e-mail
-    $snapshot = $reference->orderByChild('email')->equalTo($email)->getSnapshot();
+    $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
 
     if (!$snapshot->exists()) {
         return [
@@ -147,6 +116,7 @@ class UserService
     }
 
     $userData = $snapshot->getValue();
+    $userID = array_key_first($userData); //para pegar o ID
     $user = array_shift($userData); // Obtém o primeiro usuário da lista
 
     // Verificar a senha
@@ -154,7 +124,7 @@ class UserService
         return [
             'status' => 'success',
             'message' => 'Login bem-sucedido!',
-            'user' => $user
+            'user' => array_merge(['id' => $userID], $user),
         ];
     } else {
         return [
@@ -162,10 +132,6 @@ class UserService
             'message' => 'Senha incorreta.',
         ];
     } }
-
-    // public function login(UserRequest) {
-
-    // }
 
     public function index()
     {
