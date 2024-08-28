@@ -53,35 +53,11 @@ class UserService
         return ($cpf[9] == $digit1 && $cpf[10] == $digit2);
     }
 
-    public function isValidatCEP($cep)
-    {
-        $cep = preg_replace('/\D/', '', $cep);
-
-        if (strlen($cep) != 8) {
-            // dd($cep);
-            return false;
-        }
-    }
-
-    public function isValidatRG($rg)
-    {
-        $rg = preg_replace('/\D/', '', $rg);
-
-        if (strlen($rg) != 9) {
-            return false;
-        }
-
-
-    }
-
     public function store(UserRequest $request)
     {
         // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
-        $date = $request['date'];
-        $cep = $request['cep'];
-
         $register['role'] = "user";
 
 
@@ -108,27 +84,6 @@ class UserService
             ];
         }
 
-        // Verificar se o email já está em uso
-        $reference = $this->database->getReference($this->tablename);
-        $existingUserSnapshot = $reference
-            ->orderByChild('email')
-            ->equalTo($request['email'])
-            ->getSnapshot();
-
-        if ($existingUserSnapshot->numChildren() > 0) {
-            return [
-                'status' => 'error',
-                'message' => 'Já existe um usuário com este email.',
-            ];
-        }
-
-        if ($this->isValidatCEP($cep)) {
-            return [
-                'status' => 'error',
-                'message' => 'CEP invalido.',
-            ];
-        }
-
         // Verificar se a senha e a confirmação da senha coincidem
         if ($register['password'] !== $register['password_confirmation']) {
             return [
@@ -150,13 +105,12 @@ class UserService
             'data' => $register,
         ];
     }
-    public function loginWithEmailAndPassword($email, $password)
-    {
-        // Obter a referência da tabela de usuários
-        $reference = $this->database->getReference($this->tablename);
-
-        // Buscar usuário pelo e-mail
-        $snapshot = $reference->orderByChild('email')->equalTo($email)->getSnapshot();
+    public function login($cpf, $password)
+{
+    // Obter a referência da tabela de usuários
+    $reference = $this->database->getReference($this->tablename);
+    // Buscar usuário pelo e-mail
+    $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
 
         if (!$snapshot->exists()) {
             return [
@@ -165,27 +119,23 @@ class UserService
             ];
         }
 
-        $userData = $snapshot->getValue();
-        $user = array_shift($userData); // Obtém o primeiro usuário da lista
+    $userData = $snapshot->getValue();
+    $userID = array_key_first($userData); //para pegar o ID
+    $user = array_shift($userData); // Obtém o primeiro usuário da lista
 
-        // Verificar a senha
-        if (password_verify($password, $user['password'])) {
-            return [
-                'status' => 'success',
-                'message' => 'Login bem-sucedido!',
-                'user' => $user
-            ];
-        } else {
-            return [
-                'status' => 'error',
-                'message' => 'Senha incorreta.',
-            ];
-        }
-    }
-
-    // public function login(UserRequest) {
-
-    // }
+    // Verificar a senha
+    if (password_verify($password, $user['password'])) {
+        return [
+            'status' => 'success',
+            'message' => 'Login bem-sucedido!',
+            'user' => array_merge(['id' => $userID], $user),
+        ];
+    } else {
+        return [
+            'status' => 'error',
+            'message' => 'Senha incorreta.',
+        ];
+    } }
 
     public function index()
     {

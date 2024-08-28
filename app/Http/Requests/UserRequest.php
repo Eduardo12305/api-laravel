@@ -27,9 +27,6 @@ class UserRequest extends FormRequest
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'cpf' => 'required|string',
-            'cep' =>  'required|string',
-            'rg' => 'required|string',
-            // 'cnpj' => 'required|string|size:14',
 
         ];
     }

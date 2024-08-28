@@ -67,10 +67,10 @@ class UserController extends Controller
     {
         $validated = $request->validated(); // Obtém os dados validados
 
-        $email = $validated['email'];
+        $cpf = $validated['cpf'];
         $password = $validated['password'];
 
-        $result = $this->userService->loginWithEmailAndPassword($email, $password);
+        $result = $this->userService->login($cpf, $password);
 
         if ($result['status'] === 'success') {
             return response()->json([
@@ -100,7 +100,7 @@ class UserController extends Controller
     return response()->json(['message' => $del['message']], 200);
 }
 
-    // Colocar oara AdminControll se tiver
+    // Colocar para AdminControll se tiver
     public function busc(){
         $result = $this->userService->index();
 
