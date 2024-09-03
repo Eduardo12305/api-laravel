@@ -27,6 +27,7 @@ class UserRequest extends FormRequest
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'cpf' => 'required|string',
+            'role' => 'required|string|in:superadmin,admin,cliente',
 
         ];
     }

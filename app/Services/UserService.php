@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
 use App\Http\Requests\UserRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 class UserService
 {
@@ -54,88 +55,66 @@ class UserService
     }
 
     public function store(UserRequest $request)
-    {
-        // dd($request);
-        $register = $request->validated();
-        $cpf = $register['cpf'];
-        $register['role'] = "user";
+{
+    $register = $request->validated();
+    $cpf = $register['cpf'];
 
+    // Validação do CPF
+    if (!$this->isValidCPF($cpf)) {
+        return response()->json(['status' => 'error', 'message' => 'CPF inválido.'], 400);
+    }
 
-
-        // Validação do cpf
-        if (!$this->isValidCPF($cpf)) {
-            return [
-                'status' => 'error',
-                'message' => 'CPF inválido.',
-            ];
-        }
-
-        // Verificar se já existe um usuário com o CPF fornecido
-        $reference = $this->database->getReference($this->tablename);
-        $existingUserSnapshot = $reference
+    // Verificar se já existe um usuário com o CPF fornecido
+    try {
+        $existingUserSnapshot = $this->database->getReference($this->tablename)
             ->orderByChild('cpf')
             ->equalTo($cpf)
             ->getSnapshot();
-
+        
         if ($existingUserSnapshot->numChildren() > 0) {
-            return [
-                'status' => 'error',
-                'message' => 'Já existe um usuário com este CPF.',
-            ];
+            return response()->json(['status' => 'error', 'message' => 'Já existe um usuário com este CPF.'], 400);
         }
-
-        // Verificar se a senha e a confirmação da senha coincidem
-        if ($register['password'] !== $register['password_confirmation']) {
-            return [
-                'status' => 'error',
-                'message' => 'As senhas não coincidem',
-            ];
-        }
-
-        unset($register['password_confirmation']);
-
-
-        $register['password'] = Hash::make($register['password']);
-        // Adicionar os dados ao Firebase
-        $this->database->getReference($this->tablename)->push($register);
-
-        return [
-            'status' => 'success',
-            'message' => 'Usuário criado com sucesso!',
-            'data' => $register,
-        ];
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Erro ao verificar CPF: ' . $e->getMessage()], 500);
     }
-    public function login($cpf, $password)
-{
-    // Obter a referência da tabela de usuários
-    $reference = $this->database->getReference($this->tablename);
-    // Buscar usuário pelo e-mail
-    $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
 
-        if (!$snapshot->exists()) {
-            return [
-                'status' => 'error',
-                'message' => 'Usuário não encontrado.',
-            ];
-        }
+    // Verificar se a senha e a confirmação da senha coincidem
+    if ($register['password'] !== $register['password_confirmation']) {
+        return response()->json(['status' => 'error', 'message' => 'As senhas não coincidem'], 400);
+    }
 
-    $userData = $snapshot->getValue();
-    $userID = array_key_first($userData); //para pegar o ID
-    $user = array_shift($userData); // Obtém o primeiro usuário da lista
+    unset($register['password_confirmation']);
+    $register['password'] = Hash::make($register['password']);
 
-    // Verificar a senha
-    if (password_verify($password, $user['password'])) {
-        return [
-            'status' => 'success',
-            'message' => 'Login bem-sucedido!',
-            'user' => array_merge(['id' => $userID], $user),
-        ];
+    // Atribuição de papel ao novo usuário
+    $currentUser = auth()->user();
+    $currentUserRole = $currentUser->role ?? null;
+
+    if ($currentUserRole === 'super_admin') {
+        // Super_admin pode definir o papel do novo usuário
+        $register['role'] = $request->input('role', 'cliente'); // Role pode ser 'admin' ou 'cliente'
+    } elseif ($currentUserRole === 'admin') {
+        // Admin pode criar apenas um cliente
+        $register['role'] = 'cliente';
+    } elseif ($currentUserRole === null) {
+        // Se não há um usuário logado, o papel é 'cliente'
+        $register['role'] = 'cliente';
     } else {
-        return [
-            'status' => 'error',
-            'message' => 'Senha incorreta.',
-        ];
-    } }
+        // Usuário não autorizado a criar novos usuários
+        return response()->json(['status' => 'error', 'message' => 'Não autorizado a criar usuários.'], 403);
+    }
+
+    // Adicionar o usuário ao banco de dados
+    try {
+        $this->database->getReference($this->tablename)->push($register);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Erro ao registrar usuário: ' . $e->getMessage()], 500);
+    }
+
+    return response()->json(['status' => 'success', 'message' => 'Usuário registrado com sucesso.'], 201);
+}
+
+
 
     public function index()
     {
