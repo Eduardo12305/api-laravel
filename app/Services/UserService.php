@@ -58,7 +58,7 @@ class UserService
         // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
-        $register['role'] = "user";
+        $role = $register['role'] ?? 'cliente';
 
 
 
@@ -91,10 +91,11 @@ class UserService
                 'message' => 'As senhas não coincidem',
             ];
         }
-
+        
         unset($register['password_confirmation']);
-
-
+       
+        $register['role'] = $role;
+        
         $register['password'] = Hash::make($register['password']);
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
