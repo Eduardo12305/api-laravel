@@ -18,9 +18,19 @@ class UserController extends Controller
     public function store(UserRequest $request) {
         //  CRIAR USUARIO
         // dd($request);
-        $response = $this->userService->store($request);
 
-        return response()->json($response);
+        
+
+
+        // descomentar o codigo dps
+
+        $response = $this->userService->store($request);
+        if ($response) {
+            return redirect()->route('loginview');
+        }
+        
+
+        // return response()->json($response);
     }
 
     public function login(LoginRequest $request)
@@ -32,18 +42,22 @@ class UserController extends Controller
 
         $result = $this->userService->login($cpf, $password);
 
-        if ($result['status'] === 'success') {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Usuário autenticado com sucesso.',
-                'user' => $result['user']
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => $result['message']
-            ], 401);
+        if($result) {
+            return redirect()->route('home');
         }
+
+        // if ($result['status'] === 'success') {
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'message' => 'Usuário autenticado com sucesso.',
+        //         'user' => $result['user']
+        //     ], 200);
+        // } else {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $result['message']
+        //     ], 401);
+        // }
     }
 
 

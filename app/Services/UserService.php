@@ -62,7 +62,7 @@ class UserService
         $register['role'] = "cliente";
 
 
-
+        // dd($request);
         // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
             return [
@@ -137,11 +137,13 @@ class UserService
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
-        return [
-            'status' => 'success',
-            'message' => 'Usuário criado com sucesso!',
-            'data' => $register,
-        ];
+        // descomentar o codigo a baixo na hora de usar a api
+
+        // return [
+        //     'status' => 'success',
+        //     'message' => 'Usuário criado com sucesso!',
+        //     'data' => $register,
+        // ];
     }
     public function login($cpf, $password)
 {
