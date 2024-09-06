@@ -85,7 +85,7 @@ class UserService
             ];
         }
 
-        // Verificar se a senha e a confirmação da senha coincidem
+        // Verificar as senhas
         if ($register['password'] !== $register['password_confirmation']) {
             return [
                 'status' => 'error',
@@ -100,7 +100,18 @@ class UserService
 
         $user = Auth::user();
 
-         // Definir o papel de acordo com o papel do usuário autenticado
+        if (!$user) {
+            // Criando um novo usuario
+            $this->database->getReference($this->tablename)->push($register);
+    
+            return [
+                'status' => 'success',
+                'message' => 'Usuário criado com sucesso!',
+                'data' => $register,
+            ];
+        }
+
+         // Definir o papel se existir um usuario
         if ($user['role'] === 'SuperAdmin') {
             // Permitir que SuperAdmin defina o papel como admin ou cliente
             if (isset($register['role']) && !in_array($register['role'], ['admin', 'cliente'])) {
