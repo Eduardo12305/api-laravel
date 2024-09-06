@@ -5,6 +5,7 @@ namespace App\Services;
 use Kreait\Firebase\Contract\Database;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 class UserService
 {
     protected $database;
@@ -58,7 +59,7 @@ class UserService
         // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
-        $register['role'] = "user";
+        $register['role'] = "cliente";
 
 
 
@@ -96,6 +97,32 @@ class UserService
 
 
         $register['password'] = Hash::make($register['password']);
+
+        $user = Auth::user();
+
+         // Definir o papel de acordo com o papel do usuário autenticado
+        if ($user['role'] === 'SuperAdmin') {
+            // Permitir que SuperAdmin defina o papel como admin ou cliente
+            if (isset($register['role']) && !in_array($register['role'], ['admin', 'cliente'])) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Papel inválido. SuperAdmin pode definir como admin ou cliente.',
+                ];
+            }
+        } elseif ($user['role'] === 'admin') {
+            // Permitir que admin defina o papel como cliente
+            if (isset($register['role']) && $register['role'] !== 'cliente') {
+                return [
+                    'status' => 'error',
+                    'message' => 'Admin só pode definir o papel como cliente.',
+                ];
+            }
+        } elseif ($user['role'] === 'cliente') {
+            return [
+                'status' => 'error',
+                'message' => 'Cliente não tem permissão para criar novos usuários.',
+            ];
+        }
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
