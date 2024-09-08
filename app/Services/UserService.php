@@ -4,8 +4,9 @@ namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
 use App\Http\Requests\UserRequest;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Kreait\Firebase\Auth;
 class UserService
 {
     protected $database;
@@ -98,42 +99,13 @@ class UserService
 
         $register['password'] = Hash::make($register['password']);
 
-        $user = Auth::user();
-
-        if (!$user) {
-            // Criando um novo usuario
-            $this->database->getReference($this->tablename)->push($register);
-    
-            return [
-                'status' => 'success',
-                'message' => 'Usuário criado com sucesso!',
-                'data' => $register,
-            ];
-        }
-
-         // Definir o papel se existir um usuario
-        if ($user['role'] === 'SuperAdmin') {
-            // Permitir que SuperAdmin defina o papel como admin ou cliente
-            if (isset($register['role']) && !in_array($register['role'], ['admin', 'cliente'])) {
-                return [
-                    'status' => 'error',
-                    'message' => 'Papel inválido. SuperAdmin pode definir como admin ou cliente.',
-                ];
-            }
-        } elseif ($user['role'] === 'admin') {
-            // Permitir que admin defina o papel como cliente
-            if (isset($register['role']) && $register['role'] !== 'cliente') {
-                return [
-                    'status' => 'error',
-                    'message' => 'Admin só pode definir o papel como cliente.',
-                ];
-            }
-        } elseif ($user['role'] === 'cliente') {
-            return [
-                'status' => 'error',
-                'message' => 'Cliente não tem permissão para criar novos usuários.',
-            ];
-        }
+        // Cria usuário no firebase e adiciona as informções dele no banco
+        $auth = Firebase::auth();
+        $user = $auth->createUserWithEmailAndPassword(
+            $register['email'],
+            $register['password']
+        );
+        $register['uid'] = "{$user->uid}";
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
@@ -150,7 +122,7 @@ class UserService
     // Obter a referência da tabela de usuários
     $reference = $this->database->getReference($this->tablename);
     // Buscar usuário pelo e-mail
-    $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
+    $snapshot = $reference->orderByChild('email')->equalTo($cpf)->getSnapshot();
 
         if (!$snapshot->exists()) {
             return [
@@ -158,24 +130,12 @@ class UserService
                 'message' => 'Usuário não encontrado.',
             ];
         }
+        // login com o firebase
+        $auth = Firebase::auth();
+        $response = $auth->signInWithEmailAndPassword($cpf, $password);
 
-    $userData = $snapshot->getValue();
-    $userID = array_key_first($userData); //para pegar o ID
-    $user = array_shift($userData); // Obtém o primeiro usuário da lista
-
-    // Verificar a senha
-    if (password_verify($password, $user['password'])) {
-        return [
-            'status' => 'success',
-            'message' => 'Login bem-sucedido!',
-            'user' => array_merge(['id' => $userID], $user),
-        ];
-    } else {
-        return [
-            'status' => 'error',
-            'message' => 'Senha incorreta.',
-        ];
-    } }
+        return $response;
+   }
 
     public function index()
     {

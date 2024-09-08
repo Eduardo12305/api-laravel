@@ -35,29 +35,11 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $validated = $request->validated(); // Obtém os dados validados
+       $validated = $request->validated();
+       $email = $validated['email'];
+       $password = $validated['password'];
 
-        $cpf = $validated['cpf'];
-        $password = $validated['password'];
-
-        $result = $this->userService->login($cpf, $password);
-
-        if($result) {
-            return redirect()->route('home');
-        }
-
-        // if ($result['status'] === 'success') {
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'message' => 'Usuário autenticado com sucesso.',
-        //         'user' => $result['user']
-        //     ], 200);
-        // } else {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $result['message']
-        //     ], 401);
-        // }
+       return $this->userService->login($email, $password);
     }
 
 
