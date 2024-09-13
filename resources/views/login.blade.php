@@ -9,7 +9,7 @@
     <form method="POST" action="{{ route('login') }}">
 
     @csrf
-    <input type="text" name="cpf" placeholder="CPF">
+    <input type="email" name="email" placeholder="email">
     <input type="password" name="password" placeholder="password">
 
     <button type="submit">Login</button>

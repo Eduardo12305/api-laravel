@@ -35,11 +35,17 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
+
        $validated = $request->validated();
        $email = $validated['email'];
        $password = $validated['password'];
 
-       return $this->userService->login($email, $password);
+        $user = $this->userService->login($email, $password);
+        echo '<pre>'; print_r($user); echo '</pre>';
+       if($user){
+        return redirect()->route('home');
+       }
+       return response()->json('error',401);
     }
 
 

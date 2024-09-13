@@ -97,15 +97,18 @@ class UserService
         unset($register['password_confirmation']);
 
 
-        $register['password'] = Hash::make($register['password']);
 
-        // Cria usuário no firebase e adiciona as informções dele no banco
+        // Cria usuário no firebase e adiciona as informações dele no banco
         $auth = Firebase::auth();
         $user = $auth->createUserWithEmailAndPassword(
             $register['email'],
             $register['password']
         );
         $register['uid'] = "{$user->uid}";
+
+        unset($register['password']);
+        unset($register['email']);
+
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
@@ -119,17 +122,6 @@ class UserService
     }
     public function login($cpf, $password)
 {
-    // Obter a referência da tabela de usuários
-    $reference = $this->database->getReference($this->tablename);
-    // Buscar usuário pelo e-mail
-    $snapshot = $reference->orderByChild('email')->equalTo($cpf)->getSnapshot();
-
-        if (!$snapshot->exists()) {
-            return [
-                'status' => 'error',
-                'message' => 'Usuário não encontrado.',
-            ];
-        }
         // login com o firebase
         $auth = Firebase::auth();
         $response = $auth->signInWithEmailAndPassword($cpf, $password);
