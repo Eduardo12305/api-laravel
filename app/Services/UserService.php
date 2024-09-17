@@ -107,7 +107,6 @@ class UserService
         $register['uid'] = "{$user->uid}";
 
         unset($register['password']);
-        unset($register['email']);
 
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
