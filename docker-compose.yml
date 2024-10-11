@@ -1,0 +1,34 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    environment:
+      - DB_DATABASE=api
+      - DB_PASSWORD=admin12345678
+
+
+  nginx:
+      image: nginx:latest
+      volumes:
+        - ./nginx/default.conf:/etc/conf.d/default.conf  # Mapeia a configuração do Nginx
+        - .:/var/www  # Mapeia o código da aplicação
+      ports:
+        - "8086:8086"
+      depends_on:
+        - app
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: api                  # Nome do banco de dados
+      MYSQL_ROOT_PASSWORD: admin12345678   # Senha do root
+    ports:
+      - "3307:3306"
