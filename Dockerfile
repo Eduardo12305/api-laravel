@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    netcat-openbsd \
     && docker-php-ext-install zip pdo mbstring bcmath opcache pdo_mysql
 
 # Instalar o Composer
@@ -34,4 +35,4 @@ RUN chmod +x /usr/local/bin/start
 EXPOSE 9000
 
 # Comando de inicialização
-CMD start db:3306 -- php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=9000
+CMD ["start", "db", "3306", "--", "php", "artisan", "migrate", "--force", "&&", "php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"]
