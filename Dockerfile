@@ -27,12 +27,8 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 # Instalar as dependências do Composer
 RUN composer install --optimize-autoloader --no-dev
 
-# Copiar o script de espera
-COPY start.sh /usr/local/bin/start
-RUN chmod +x /usr/local/bin/start
-
 # Expor a porta 9000
 EXPOSE 9000
 
 # Comando de inicialização
-CMD ["start", "db", "3306", "--", "php", "artisan", "migrate", "--force", "&&", "php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"]

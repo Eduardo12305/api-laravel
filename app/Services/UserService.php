@@ -55,19 +55,17 @@ class UserService
 
     public function store(UserRequest $request)
     {
-        // dd($request);
+        dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
         $role = $register['role'] ?? 'cliente';
 
-
-
-        // Validação do cpf
+        // Validação do CPF
         if (!$this->isValidCPF($cpf)) {
-            return [
+            return response()->json([
                 'status' => 'error',
                 'message' => 'CPF inválido.',
-            ];
+            ], 400);
         }
 
         // Verificar se já existe um usuário com o CPF fornecido
