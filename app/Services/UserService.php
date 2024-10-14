@@ -55,7 +55,7 @@ class UserService
 
     public function store(UserRequest $request)
     {
-        dd($request);
+        // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
         $role = $register['role'] ?? 'cliente';
