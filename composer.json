@@ -32,6 +32,12 @@
         }
     },
     "scripts": {
+        "post-install-cmd": [
+            "php artisan config:clear",
+            "php artisan route:clear",
+            "php artisan cache:clear",
+            "php -r \"echo 'Available Routes:\\n'; print_r(\\Illuminate\\Support\\Facades\\Route::getRoutes()->getIterator()->getArray());\""
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

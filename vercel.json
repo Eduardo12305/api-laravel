@@ -1,19 +1,39 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "public/index.php",
-      "use": "vercel-php@0.1.0"
-    }
-  ],
+  "functions": {
+    "api/index.php": { "runtime": "vercel-php@0.6.1" }
+  },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "public/index.php" 
-    },
-    {
       "src": "/(.*)",
-      "dest": "public/index.php" 
+      "dest": "/api/index.php"
     }
-  ]
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "true",  
+    "APP_URL": "https://xdxdxd.com",
+    
+    "APP_CONFIG_CACHE": "/tmp/config.php",
+    "APP_EVENTS_CACHE": "/tmp/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "VIEW_COMPILED_PATH": "/tmp",
+
+    "CACHE_DRIVER": "array",  
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie",
+    
+    "FIREBASE_DATABASE_URL": "https://sistema-finaceiro-71792-default-rtdb.firebaseio.com/",
+    "FIREBASE_CREDENTIALS": "storage/app/firebase_auth.json"
+  },
+  "build": {
+    "commands": [
+      "composer install",
+      "php artisan config:clear",
+      "php artisan route:clear",
+      "php artisan cache:clear"
+    ]
+  }
 }
