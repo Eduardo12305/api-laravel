@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\UserController;
 
 Route::post('register', [UserController::class, 'store']);
 Route::delete('/delete/{id}', [UserController::class, 'destroy']);
