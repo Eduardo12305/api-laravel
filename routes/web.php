@@ -12,9 +12,9 @@ Route::get('/', function () {
 
 // Route::post('register', [UserController::class, 'register']);
 
-Route::get('/hello', function () {
-    return response()->json(['message' => 'hello']);
-});
+// Route::get('/hello', function () {
+//     return response()->json(['message' => 'hello']);
+// });
 
 Route::post('register', [UserController::class, 'store']);
 Route::delete('/delete/{id}', [UserController::class, 'destroy']);
