@@ -23,10 +23,13 @@ class UserRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'cpf' => 'required|string',
+            'img' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'id_plano' => 'nullable|string',
+            'dt_venc' => 'nullable|date',
 
         ];
     }

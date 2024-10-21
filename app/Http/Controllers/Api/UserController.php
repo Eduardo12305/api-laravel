@@ -15,6 +15,16 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
+
+    public function create(UserRequest $request){
+        $response = $this->userService->store($request);
+        return response()->json($response);
+    }
+
+    public function view(){
+        return view('imgteste');
+    }
+
     public function store(UserRequest $request) {
         //  CRIAR USUARIO
         // dd($request);

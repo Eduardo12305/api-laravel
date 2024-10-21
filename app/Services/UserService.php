@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
+use Kreait\Firebase\Storage;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
 class UserService
 {
     protected $database;
     protected $tablename;
+    protected $storage;
 
     public function __construct(Database $database)
     {
@@ -97,6 +99,24 @@ class UserService
         $register['role'] = $role;
         
         $register['password'] = Hash::make($register['password']);
+
+        // Verificar imagem
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filePath = 'user_images/' . time() . '.' . $file->getClientOriginalExtension();
+    
+            // Upload para o Firebase Storage
+            $this->storage->getBucket()->upload(
+                fopen($file->getRealPath(), 'r'),
+                [
+                    'name' => $filePath,
+                    'predefinedAcl' => 'publicRead', // Tornar a imagem pública, se necessário
+                ]
+            );
+    
+            // Adicionar a URL da imagem ao registro
+            $register['image_url'] = "https://storage.googleapis.com/{$this->storage->getBucket()->name()}/{$filePath}";
+        }
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
 
