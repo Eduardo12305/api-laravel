@@ -103,19 +103,11 @@ class UserService
         // Verificar imagem
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filePath = 'user_images/' . time() . '.' . $file->getClientOriginalExtension();
-    
-            // Upload para o Firebase Storage
-            $this->storage->getBucket()->upload(
-                fopen($file->getRealPath(), 'r'),
-                [
-                    'name' => $filePath,
-                    'predefinedAcl' => 'publicRead', // Tornar a imagem pública, se necessário
-                ]
-            );
-    
+            $fileData = file_get_contents($file);
+            $base64 = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode($fileData);
+           
             // Adicionar a URL da imagem ao registro
-            $register['image_url'] = "https://storage.googleapis.com/{$this->storage->getBucket()->name()}/{$filePath}";
+            $register['image_b64'] = $base64;
         }
         // Adicionar os dados ao Firebase
         $this->database->getReference($this->tablename)->push($register);
