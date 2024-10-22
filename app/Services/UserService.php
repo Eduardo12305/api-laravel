@@ -3,19 +3,20 @@
 namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
-use Kreait\Firebase\Storage;
+use App\Services\PlanoService;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
 class UserService
 {
     protected $database;
     protected $tablename;
-    protected $storage;
+    protected $planoService;
 
-    public function __construct(Database $database)
+    public function __construct(Database $database, PlanoService $planoService)
     {
         $this->database = $database;
         $this->tablename = "contacts"; // Nome da tabela no Firebase
+        $this->planoService = $planoService;
 
     }
 
@@ -57,13 +58,12 @@ class UserService
 
     public function store(UserRequest $request)
     {
-        // dd($request);
         $register = $request->validated();
         $cpf = $register['cpf'];
         $role = $register['role'] ?? 'cliente';
-
-
-
+        
+        
+        
         // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
             return [
@@ -71,14 +71,14 @@ class UserService
                 'message' => 'CPF inválido.',
             ];
         }
-
+        
         // Verificar se já existe um usuário com o CPF fornecido
         $reference = $this->database->getReference($this->tablename);
         $existingUserSnapshot = $reference
-            ->orderByChild('cpf')
-            ->equalTo($cpf)
-            ->getSnapshot();
-
+        ->orderByChild('cpf')
+        ->equalTo($cpf)
+        ->getSnapshot();
+        
         if ($existingUserSnapshot->numChildren() > 0) {
             return [
                 'status' => 'error',
@@ -95,21 +95,39 @@ class UserService
         }
         
         unset($register['password_confirmation']);
-       
+        
         $register['role'] = $role;
         
         $register['password'] = Hash::make($register['password']);
-
+        
         // Verificar imagem
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileData = file_get_contents($file);
             $base64 = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode($fileData);
-           
+            
             // Adicionar a URL da imagem ao registro
             $register['image_b64'] = $base64;
         }
-        // Adicionar os dados ao Firebase
+        
+        $planId = $register['id_plano'] ?? 0;
+        $planDetails = $this->planoService->getPlanById($planId);
+        
+        if(!$planDetails){
+            return[
+                'status' => 'error',
+                'message' => 'Plano inválido'
+            ];
+        }
+        
+        
+        // Detalhes do plano adicionados
+        $register['id_plano'] = $planId;
+        $register['dt_venc'] = $this->planoService->calculateDueDate($planId);
+        $register = array_merge($register, $planDetails);
+
+          // Adicionar os dados ao Firebase
+
         $this->database->getReference($this->tablename)->push($register);
 
         return [
@@ -120,20 +138,23 @@ class UserService
     }
     public function login($cpf, $password)
 {
+    dd('veio ate aqui');
+
+    $cpf = $this->isValidCPF($cpf);
     // Obter a referência da tabela de usuários
     $reference = $this->database->getReference($this->tablename);
-    // Buscar usuário pelo e-mail
+    // Buscar usuário pelo CPF
     $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
 
-        if (!$snapshot->exists()) {
-            return [
-                'status' => 'error',
-                'message' => 'Usuário não encontrado.',
-            ];
-        }
+    if (!$snapshot->exists()) {
+        return [
+            'status' => 'error',
+            'message' => 'Usuário não encontrado.',
+        ];
+    }
 
     $userData = $snapshot->getValue();
-    $userID = array_key_first($userData); //para pegar o ID
+    $userID = array_key_first($userData); // para pegar o ID
     $user = array_shift($userData); // Obtém o primeiro usuário da lista
 
     // Verificar a senha
@@ -141,14 +162,16 @@ class UserService
         return [
             'status' => 'success',
             'message' => 'Login bem-sucedido!',
-            'user' => array_merge(['id' => $userID], $user),
+            'user' => array_merge(['id' => $userID], $user), // Inclui o ID e todos os dados do usuário
         ];
     } else {
         return [
             'status' => 'error',
             'message' => 'Senha incorreta.',
         ];
-    } }
+    }
+}
+
 
     public function index()
     {

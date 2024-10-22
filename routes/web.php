@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\PlanoController;
 use Illuminate\Http\Request;
 
 // Route::get('register', [UserController::class, 'register']);
@@ -20,18 +21,21 @@ Route::get('/', function () {
 Route::post('register', [UserController::class, 'store']);
 
 
-Route::get('/user/view', [UserController::class, 'view']);
-Route::post('/user/create', [UserController::class, 'create'])->name('user.store');
+Route::get('/user/view', [UserController::class, 'view']); // para fins de teste
+Route::post('/user/create', [UserController::class, 'create'])->name('user.store'); //para fins de teste
 
 Route::delete('/delete/{id}', [UserController::class, 'destroy']);
-Route::post('login', [UserController::class, 'login']);
 
-Route::get('busca', [UserController::class, 'busc']);
+Route::post('/login', [UserController::class, 'login']);
 
-Route::get('/token', function (Request $request) {
-    $token = $request->session()->token();
- 
-    $token = csrf_token();
- 
-    // ...
-});
+Route::get('/busca', [UserController::class, 'busc']);
+
+
+Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
+
+
+Route::get('/planos/all', [PlanoController::class, 'planoAll']);
+
+Route::delete('/end', [PlanoController::class, 'deleteAll']);
+
+
