@@ -25,6 +25,10 @@ class UserController extends Controller
         return view('imgteste');
     }
 
+    public function viewlog(){
+        return view('lgnteste');
+    }
+
     public function store(UserRequest $request) {
         //  CRIAR USUARIO
         // dd($request);

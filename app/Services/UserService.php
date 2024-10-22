@@ -71,6 +71,8 @@ class UserService
                 'message' => 'CPF inválido.',
             ];
         }
+
+        $register['cpf'] = preg_replace('/\D/', '', $register['cpf']);
         
         // Verificar se já existe um usuário com o CPF fornecido
         $reference = $this->database->getReference($this->tablename);
@@ -138,9 +140,13 @@ class UserService
     }
     public function login($cpf, $password)
 {
-    dd('veio ate aqui');
-
-    $cpf = $this->isValidCPF($cpf);
+    if (!$this->isValidCPF($cpf)) {
+        return [
+            'status' => 'error',
+            'message' => 'CPF inválido.',
+        ];
+    }
+    $cpf = preg_replace('/\D/', '', $cpf);
     // Obter a referência da tabela de usuários
     $reference = $this->database->getReference($this->tablename);
     // Buscar usuário pelo CPF
