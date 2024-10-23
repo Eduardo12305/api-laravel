@@ -4,9 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PlanoController;
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
 
 Route::post('register', [UserController::class, 'register']);
@@ -28,8 +28,8 @@ Route::delete('/delete/{id}', [UserController::class, 'destroy']);
 
 Route::post('/login', [UserController::class, 'login']);
 
-Route::get('/busca', [UserController::class, 'busc']);
 
+Route::get('/busca', [UserController::class, 'busc']);
 
 Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
 
