@@ -124,4 +124,26 @@ class PlanoService {
         ];
     }
 
+    public function changeUserPlan($userId, $planId): array {
+        // Verifica se o plano existe
+        $planReference = $this->database->getReference('planos/' . $planId);
+        $planSnapshot = $planReference->getSnapshot();
+    
+        if (!$planSnapshot->exists()) {
+            return [
+                'status' => 'error',
+                'message' => 'O plano informado não existe.',
+            ];
+        }
+    
+        // Lógica para trocar o plano do usuário no Firebase
+        $reference = $this->database->getReference('usuarios/' . $userId . '/plano');
+        $reference->set($planId);
+    
+        return [
+            'status' => 'success',
+            'message' => 'Plano do usuário alterado com sucesso.',
+        ];
+    }
+    
 }
