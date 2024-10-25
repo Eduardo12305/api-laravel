@@ -38,8 +38,6 @@ Route::delete('/delete/{id}', [UserController::class, 'destroy']);
 Route::post('/login', [UserController::class, 'login']);
 
 
-Route::get('/busca', [UserController::class, 'busc']);
-
 Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
 
 
