@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PlanoController;
-use Illuminate\Http\Request;
 
 // Route::get('register', [UserController::class, 'register']);
 
@@ -12,11 +12,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::post('register', [UserController::class, 'register']);
 
-// Route::get('/hello', function () {
-//     return response()->json(['message' => 'hello']);
-// });
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+
+Route::post('register', [UserController::class, 'register']);
+
+Route::get('/hello', function () {
+    return response()->json(['message' => 'hello']);
+});
 
 Route::post('register', [UserController::class, 'store']);
 
@@ -31,8 +37,6 @@ Route::delete('/delete/{id}', [UserController::class, 'destroy']);
 
 Route::post('/login', [UserController::class, 'login']);
 
-Route::get('/busca', [UserController::class, 'busc']);
-
 
 Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
 
@@ -42,3 +46,4 @@ Route::get('/planos/all', [PlanoController::class, 'planoAll']);
 Route::delete('/end', [PlanoController::class, 'deleteAll']);
 
 
+Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);

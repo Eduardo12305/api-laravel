@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\PlanoService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class PlanoController extends Controller
 {
@@ -49,6 +50,26 @@ public function planoAll(): JsonResponse
 }
 
 
+public function changeUserPlan($planId, $confirmation): JsonResponse {
+    if (!$confirmation) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Confirmação necessária para mudar o plano.'
+        ], 400);
+    }
+
+    $userId = Auth::id();
+    if (!$userId) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Usuário não autenticado.'
+        ], 401);
+    }
+
+    $result = $this->planoService->changeUserPlan($userId, $planId);
+
+    return response()->json($result, $result['status'] === 'success' ? 200 : 500);
+}
 
 // Não pega, olhar o planoService depois
 public function deleteAll(): JsonResponse
