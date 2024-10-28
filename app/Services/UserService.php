@@ -126,10 +126,8 @@ class UserService
         // Detalhes do plano adicionados
         $register['id_plano'] = $planId;
         $register['dt_venc'] = $this->planoService->calculateDueDate($planId);
-        $register = array_merge($register, $planDetails);
-
+        
           // Adicionar os dados ao Firebase
-
         $this->database->getReference($this->tablename)->push($register);
 
         return [
@@ -152,29 +150,24 @@ class UserService
     // Buscar usuário pelo CPF
     $snapshot = $reference->orderByChild('cpf')->equalTo($cpf)->getSnapshot();
 
-    if (!$snapshot->exists()) {
+    $userData = $snapshot->getValue();
+    $userID = array_key_first($userData); // para pegar o ID
+    $user = array_shift($userData); // Obtém o primeiro usuário da lista
+
+    if ($user == null) {
         return [
             'status' => 'error',
             'message' => 'Usuário não encontrado.',
         ];
     }
 
-    $userData = $snapshot->getValue();
-    $userID = array_key_first($userData); // para pegar o ID
-    $user = array_shift($userData); // Obtém o primeiro usuário da lista
-
     // Verificar a senha
     if (password_verify($password, $user['password'])) {
-        return [
-            'status' => 'success',
-            'message' => 'Login bem-sucedido!',
-            'user' => array_merge(['id' => $userID], $user), // Inclui o ID e todos os dados do usuário
-        ];
+        return response()->json(array_merge(['id' => $userID], $user),200);
     } else {
-        return [
-            'status' => 'error',
-            'message' => 'Senha incorreta.',
-        ];
+        return response()->json([
+            'message' => 'Usuário ou senha incorretos!'
+        ],400);
     }
 }
 

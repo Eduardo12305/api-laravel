@@ -46,18 +46,8 @@ class UserController extends Controller
 
         $result = $this->userService->login($cpf, $password);
 
-        if ($result['status'] === 'success') {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Usuário autenticado com sucesso.',
-                'user' => $result['user']
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => $result['message']
-            ], 401);
-        }
+        return $result;
+        
     }
 
 
