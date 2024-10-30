@@ -43,7 +43,7 @@ public function planoAll(): JsonResponse
     $plans = $this->planoService->getAllPlans();
     
     // Debugging: veja o que está sendo retornado
-    dd($plans);
+  
 
     return response()->json([
         'status' => 'success',
