@@ -81,34 +81,34 @@ class PlanoService {
     }
 
     public function getAllPlans()
-    {
-        // Obtém a referência ao nó 'planos'
-        $reference = $this->database->getReference('planos');
-        $snapshot = $reference->getSnapshot();
+{
+    // Obtém a referência ao nó 'planos'
+    $reference = $this->database->getReference('planos');
+    $snapshot = $reference->getSnapshot();
 
-        // Verifica se o snapshot existe
-        if (!$snapshot->exists()) {
-            return []; // Retorna um array vazio se não houver planos
-        }
-
-        // Obtém todos os planos
-        $plans = $snapshot->getValue(); // $plans é um array de planos
-
-        // Formata os dados para incluir os IDs
-        $formattedPlans = [];
-        foreach ($plans as $key => $value) {
-            // $key é o ID do plano (a chave no Firebase)
-            // $value é o valor associado a essa chave (os dados do plano)
-            
-            if (is_array($value)) {
-                $formattedPlans[$key] = array_merge(['id' => $key], $value);
-            } else {
-                $formattedPlans[$key] = ['id' => $key];
-            }
-        }
-
-        return $formattedPlans; // Retorna os planos formatados
+    // Verifica se o snapshot existe
+    if (!$snapshot->exists()) {
+        return []; // Retorna um array vazio se não houver planos
     }
+
+    // Obtém todos os planos
+    $plans = $snapshot->getValue(); // $plans é um array de planos
+
+    // Formata os dados para incluir os IDs
+    $formattedPlans = [];
+    foreach ($plans as $key => $value) {
+        // Certifique-se de que $value é um array
+        if (is_array($value)) {
+            $formattedPlans[$key] = array_merge(['id' => $key], $value);
+        } else {
+            // Se não for um array, crie uma estrutura padrão
+            $formattedPlans[$key] = ['id' => $key, 'data' => $value];
+        }
+    }
+
+    return $formattedPlans; // Retorna os planos formatados
+}
+
 
     public function deleteAllPlans()
     {
@@ -145,5 +145,6 @@ class PlanoService {
             'message' => 'Plano do usuário alterado com sucesso.',
         ];
     }
+
     
 }

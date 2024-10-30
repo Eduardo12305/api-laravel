@@ -42,3 +42,5 @@ Route::delete('/end', [PlanoController::class, 'deleteAll']);
 
 
 Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
+
+Route::get('/planos', [PlanoController::class, 'planoAll']);
