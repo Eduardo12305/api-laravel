@@ -6,6 +6,8 @@ use Kreait\Firebase\Contract\Database;
 use App\Services\PlanoService;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 class UserService
 {
     protected $database;
@@ -233,5 +235,31 @@ class UserService
             'message' => 'Usuário excluído com sucesso.',
         ];
     }
+
+    public function updateName($id, $name)
+    {
+        // 1. Verifica se o usuário existe no Firebase antes de tentar atualizar
+        $firebaseUserReference = $this->database->getReference('contracts/' . $id);
+        $user = $firebaseUserReference->getValue();
+    
+        if (!$user) {
+            // Se o usuário não existir no Firebase, retorna uma resposta de erro
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    
+        // 2. Atualizar o nome no Firebase
+        try {
+            $firebaseUserReference->update([
+                'name' => $name
+            ]);
+        } catch (\Exception $e) {
+            // Caso ocorra um erro na atualização no Firebase
+            return response()->json(['message' => 'Error updating name in Firebase', 'error' => $e->getMessage()], 500);
+        }
+    
+        // 3. Retorna uma resposta de sucesso
+        return response()->json(['message' => 'Name updated successfully']);
+    }
+    
 
 }
