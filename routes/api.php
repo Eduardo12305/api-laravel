@@ -17,14 +17,20 @@ Route::get('/hello', function () {
 });
 
 // usuarios
-Route::post('register', [UserController::class, 'store']);
+Route::post('/register', [UserController::class, 'store']);
 
 Route::delete('/delete/{id}', [UserController::class, 'destroy']);
 
 Route::post('/login', [UserController::class, 'login']);
 
-Route::post('/user/log', [UserController::class, 'login'])->name('user.login');
+Route::post('/user/log', [UserController::class, 'login'])->name('user.login'); //apagar depois
 
+// Atualizar daddos do usuario
+Route::put('/user/{id}/update-name', [UserController::class, 'updateName']);
+
+Route::put('/user/{id}/update-email', [UserController::class, 'updateEmail']);
+
+Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
 // Cripto
 Route::post('addCripto', [CriptoController::class, 'addCripto']);
 Route::get('getCripto', [CriptoController::class, 'getCripto']);
