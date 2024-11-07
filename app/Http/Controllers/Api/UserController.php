@@ -6,15 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\LoginRequest;
 use App\Services\UserService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
 
     protected $userService;
+    protected $tablename;
+
 
     public function __construct(UserService $userService){
         $this->userService = $userService;
+        $this->tablename = "contacts"; // Nome da tabela no Firebase
+
     }
 
 
@@ -71,25 +77,29 @@ class UserController extends Controller
 
         return response()->json(['message' => $result['message']], 404);
     }
-
-    public function updateName($id, $name)
+    
+    public function updateName(Request $req, $id)
 {
-    // Validação dos dados (sem a necessidade de verificar se o usuário existe no MySQL)
+    // Obtendo o "name" do corpo da requisição
+    $name = $req->name;
+
+    // Validação dos dados
     $validated = Validator::make(compact('id', 'name'), [
-        'id' => 'required|string',  // Verifica se o ID é válido como string (supondo que o ID seja string)
-        'name' => 'required|string|max:255',
+        'id' => 'required|string',  // O id deve ser passado via URL e ser uma string
+        'name' => 'required|string|max:255',  // O name vem do corpo da requisição
     ]);
 
     if ($validated->fails()) {
+        // Se a validação falhar, retorna erro 422
         return response()->json(['message' => 'Validation failed', 'errors' => $validated->errors()], 422);
     }
 
-    // Chama o serviço de atualização
+    // Chama o serviço de atualização com id e name
     $result = $this->userService->updateName($id, $name);
 
     // Caso o usuário não seja encontrado no Firebase
     if (isset($result['message']) && $result['message'] === 'User not found') {
-        return response()->json($result, 404);  // Retorna 404 se o usuário não for encontrado no Firebase
+        return response()->json($result, 404);  // Retorna 404 se o usuário não for encontrado
     }
 
     // Caso tenha algum erro no Firebase durante a atualização
@@ -101,7 +111,80 @@ class UserController extends Controller
     }
 
     // Caso a atualização tenha sido bem-sucedida
-    return response()->json(['message' => 'Name updated successfully']);
+    return response()->json($result);
+}
+
+
+public function updateEmail(Request $req, $id)
+{
+    // Obtendo o "email" do corpo da requisição
+    $email = $req->email;
+    
+    // Validação dos dados
+    $validated = Validator::make(compact('id', 'email'), [
+        'id' => 'required|string',  
+        'email' => 'required|email|max:255',  
+    ]);
+
+    if ($validated->fails()) {
+        // Se a validação falhar, retorna erro 422
+        return response()->json(['message' => 'Validation failed', 'errors' => $validated->errors()], 422);
+    }
+
+    // Chama o serviço de atualização com id e email
+    $result = $this->userService->updateEmail($id, $email);
+
+    // Caso o usuário não seja encontrado no Firebase
+    if (isset($result['message']) && $result['message'] === 'User not found') {
+        return response()->json($result, 404);  // Retorna 404 se o usuário não for encontrado
+    }
+
+    // Caso tenha algum erro no Firebase durante a atualização
+    if (isset($result['error'])) {
+        return response()->json([
+            'message' => 'Error updating name in Firebase',
+            'error' => $result['error']
+        ], 500);
+    }
+
+    // Caso a atualização tenha sido bem-sucedida
+    return response()->json($result);
+}
+
+public function updatePassword(Request $req, $id)
+{
+    // Obtendo o "password" do corpo da requisição
+    $password = $req->password;
+    
+    // Validação dos dados
+    $validated = Validator::make(compact('id', 'password'), [
+        'id' => 'required|string',  
+        'password' => ['required', Password::min(8)->letters()->numbers()->mixedCase()->symbols()],  // Regras de senha mais fortes
+    ]);
+
+    if ($validated->fails()) {
+        // Se a validação falhar, retorna erro 422
+        return response()->json(['message' => 'Validation failed', 'errors' => $validated->errors()], 422);
+    }
+
+    // Chama o serviço de atualização com id e password
+    $result = $this->userService->updatePassword($id, $password);
+
+    // Caso o usuário não seja encontrado no Firebase
+    if (isset($result['message']) && $result['message'] === 'User not found') {
+        return response()->json($result, 404);  // Retorna 404 se o usuário não for encontrado
+    }
+
+    // Caso tenha algum erro no Firebase durante a atualização
+    if (isset($result['error'])) {
+        return response()->json([
+            'message' => 'Error updating name in Firebase',
+            'error' => $result['error']
+        ], 500);
+    }
+
+    // Caso a atualização tenha sido bem-sucedida
+    return response()->json($result);
 }
 
 

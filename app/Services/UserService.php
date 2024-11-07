@@ -236,30 +236,103 @@ class UserService
         ];
     }
 
+    // UserService.php
     public function updateName($id, $name)
     {
-        // 1. Verifica se o usuário existe no Firebase antes de tentar atualizar
-        $firebaseUserReference = $this->database->getReference('contracts/' . $id);
-        $user = $firebaseUserReference->getValue();
-    
+        // Defina a referência no Firebase para o caminho correto
+        $reference = $this->database->getReference($this->tablename . '/' . $id);
+        
+        // Verifica se o usuário existe no Firebase
+        $user = $reference->getValue();
+        
         if (!$user) {
-            // Se o usuário não existir no Firebase, retorna uma resposta de erro
-            return response()->json(['message' => 'User not found'], 404);
+            // Se o usuário não for encontrado, retorna a mensagem de erro
+            return ['message' => 'User not found'];
         }
     
-        // 2. Atualizar o nome no Firebase
+        // Atualizando o nome do usuário no Firebase
         try {
-            $firebaseUserReference->update([
+            $reference->update([
                 'name' => $name
             ]);
         } catch (\Exception $e) {
-            // Caso ocorra um erro na atualização no Firebase
-            return response()->json(['message' => 'Error updating name in Firebase', 'error' => $e->getMessage()], 500);
+            // Em caso de erro ao atualizar, captura a exceção
+            return ['message' => 'Error updating name in Firebase', 'error' => $e->getMessage()];
         }
     
-        // 3. Retorna uma resposta de sucesso
-        return response()->json(['message' => 'Name updated successfully']);
+        // Retorna sucesso se a atualização for bem-sucedida
+        return ['message' => 'Nome atualizado com sucesso'];
     }
     
+    public function updateEmail($id,$email)
+    {
+        $reference = $this->database->getReference($this->tablename . '/' . $id);
+
+        $user = $reference->getValue();
+
+        if (!$user) {
+            // Se o usuário não for encontrado, retorna a mensagem de erro
+            return ['message' => 'User not found'];
+        }
+
+        try {
+            $reference->update([
+                'email' => $email
+            ]);
+        } catch(\Exception $e){
+            return ['message' => 'Error updating email in firebase ','error' => $e->getMessage()];
+        }
+
+        return ['message' => 'E-mail atualizado com sucesso'];
+
+    }
+
+    public function updatePassword($id,$password)
+    {
+        $reference = $this->database->getReference($this->tablename . '/' . $id);
+
+        $user = $reference->getValue();
+
+        if (!$user) {
+            // Se o usuário não for encontrado, retorna a mensagem de erro
+            return ['message' => 'User not found'];
+        }
+
+        try {
+
+            $hashedPassword = Hash::make($password);
+            $reference->update([
+                'password' => $hashedPassword
+            ]);
+        } catch(\Exception $e){
+            return ['message' => 'Error updating password in firebase ','error' => $e->getMessage()];
+        }
+
+        return ['message' => 'Senha atualizado com sucesso'];
+
+    }
+
+    public function updateImage($id,$img)
+    {
+        $reference = $this->database->getReference($this->tablename . '/' . $id);
+
+        $user = $reference->getValue();
+
+        if (!$user) {
+            // Se o usuário não for encontrado, retorna a mensagem de erro
+            return ['message' => 'User not found'];
+        }
+
+        try {
+            $reference->update([
+                'image_b64' => $img
+            ]);
+        } catch(\Exception $e){
+            return ['message' => 'Error updating img in firebase ','error' => $e->getMessage()];
+        }
+
+        return ['message' => 'Senha atualizado com sucesso'];
+
+    }
 
 }
