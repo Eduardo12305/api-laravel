@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PlanoController;
+use App\Http\Controllers\Api\CriptoController;
 
 // Route::get('register', [UserController::class, 'register']);
 Route::get('/user', function (Request $request) {
@@ -24,7 +25,12 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::post('/user/log', [UserController::class, 'login'])->name('user.login');
 
-
+// Cripto
+Route::post('addCripto', [CriptoController::class, 'addCripto']);
+Route::get('getCripto', [CriptoController::class, 'getCripto']);
+Route::get('getAllCripto', [CriptoController::class, 'getAllCripto']);
+Route::post('updCripto', [CriptoController::class, 'updCripto']);
+Route::delete('dltCripto', [CriptoController::class, 'dltCripto']);
 
 // Planos e views
 Route::get('/user/view', [UserController::class, 'view']); // para fins de teste
