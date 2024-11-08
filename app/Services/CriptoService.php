@@ -34,6 +34,7 @@ class CriptoService
             $this->database->getReference($this->tablename . '/' . $uid . '/criptos/' . $criptoID . '/ID')->set($criptoID);
             return response()->json([
                 'status' => 'success',
+                'ID' => $criptoID
             ], 201);
 
         }
