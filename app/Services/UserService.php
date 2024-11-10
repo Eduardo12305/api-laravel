@@ -58,6 +58,24 @@ class UserService
         return ($cpf[9] == $digit1 && $cpf[10] == $digit2);
     }
 
+    public function cpfUsed($cpf){
+        $reference = $this->database->getReference($this->tablename);
+        $userSnapshot = $reference
+        ->orderByChild('cpf')
+        ->equalTo($cpf)
+        ->getSnapshot();
+
+        if ($userSnapshot->numChildren() > 0) {
+            return response()->json([
+                'inUse' => true,
+            ], 201);
+        }
+        return response()->json([
+            'inUse' => False,
+        ], 201);
+
+    }
+
     public function store(UserRequest $request)
     {
         $register = $request->validated();
@@ -68,10 +86,10 @@ class UserService
         
         // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
-            return [
+            return response()->json([
                 'status' => 'error',
-                'message' => 'CPF inválido.',
-            ];
+                'message' => 'Cpf inválido.',
+            ], 400);
         }
 
         $register['cpf'] = preg_replace('/\D/', '', $register['cpf']);
@@ -84,18 +102,18 @@ class UserService
         ->getSnapshot();
         
         if ($existingUserSnapshot->numChildren() > 0) {
-            return [
+            return response()->json([
                 'status' => 'error',
-                'message' => 'Já existe um usuário com este CPF.',
-            ];
+                'message' => 'Cpf está em uso.',
+            ], 400);
         }
 
         // Verificar se a senha e a confirmação da senha coincidem
         if ($register['password'] !== $register['password_confirmation']) {
-            return [
+            return response()->json([
                 'status' => 'error',
-                'message' => 'As senhas não coincidem',
-            ];
+                'message' => 'As senhas não conhecidem.',
+            ], 400);
         }
         
         unset($register['password_confirmation']);

@@ -25,6 +25,7 @@ Route::get('/hello', function () {
 });
 
 Route::post('register', [UserController::class, 'store']);
+Route::get('cpfUsed', [UserController::class, 'cpfIsInUse']);
 
 
 Route::get('/user/view', [UserController::class, 'view']); // para fins de teste

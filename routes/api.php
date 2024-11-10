@@ -19,6 +19,8 @@ Route::get('/hello', function () {
 // usuarios
 Route::post('/register', [UserController::class, 'store']);
 
+Route::get('cpfUsed', [UserController::class, 'cpfIsInUse']);
+
 Route::delete('/delete/{id}', [UserController::class, 'destroy']);
 
 Route::post('/login', [UserController::class, 'login']);

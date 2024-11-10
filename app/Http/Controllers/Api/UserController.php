@@ -114,6 +114,12 @@ class UserController extends Controller
     return response()->json($result);
 }
 
+public function cpfIsInUse(Request $req){
+    $cpf = $req->cpf;
+
+    return $this->userService->cpfUsed($cpf);
+}
+
 
 public function updateEmail(Request $req, $id)
 {
