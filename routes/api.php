@@ -31,6 +31,8 @@ Route::put('/user/{id}/update-name', [UserController::class, 'updateName']);
 Route::put('/user/{id}/update-email', [UserController::class, 'updateEmail']);
 
 Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
+
+Route::post('/user/{id}/update-image', [UserController::class, 'updateImage']);
 // Cripto
 Route::post('addCripto', [CriptoController::class, 'addCripto']);
 Route::get('getCripto', [CriptoController::class, 'getCripto']);
@@ -59,3 +61,4 @@ Route::delete('/end', [PlanoController::class, 'deleteAll']);
 Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
 
 Route::get('/planos', [PlanoController::class, 'planoAll']);
+Route::get('/updateimageview', [UserController::class, 'updateImageView']);

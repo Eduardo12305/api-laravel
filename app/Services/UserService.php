@@ -5,6 +5,7 @@ namespace App\Services;
 use Kreait\Firebase\Contract\Database;
 use App\Services\PlanoService;
 use App\Http\Requests\UserRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -247,7 +248,7 @@ class UserService
         
         if (!$user) {
             // Se o usuário não for encontrado, retorna a mensagem de erro
-            return ['message' => 'User not found'];
+            return ['message' => 'Usuário não encontrado'];
         }
     
         // Atualizando o nome do usuário no Firebase
@@ -272,7 +273,7 @@ class UserService
 
         if (!$user) {
             // Se o usuário não for encontrado, retorna a mensagem de erro
-            return ['message' => 'User not found'];
+            return ['message' => 'Usuario não encontrado'];
         }
 
         try {
@@ -295,7 +296,7 @@ class UserService
 
         if (!$user) {
             // Se o usuário não for encontrado, retorna a mensagem de erro
-            return ['message' => 'User not found'];
+            return ['message' => 'Uusario não encontrado'];
         }
 
         try {
@@ -312,27 +313,38 @@ class UserService
 
     }
 
-    public function updateImage($id,$img)
-    {
-        $reference = $this->database->getReference($this->tablename . '/' . $id);
+    public function updateImage(Request $request, $id)
+{
+    // Validação do arquivo de imagem
 
-        $user = $reference->getValue();
+    $reference = $this->database->getReference($this->tablename . '/' . $id);
+    $user = $reference->getSnapshot();
 
-        if (!$user) {
-            // Se o usuário não for encontrado, retorna a mensagem de erro
-            return ['message' => 'User not found'];
-        }
-
-        try {
-            $reference->update([
-                'image_b64' => $img
-            ]);
-        } catch(\Exception $e){
-            return ['message' => 'Error updating img in firebase ','error' => $e->getMessage()];
-        }
-
-        return ['message' => 'Senha atualizado com sucesso'];
-
+    if (!$user->exists()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Usuário não encontrado.'
+        ], 404);
     }
+
+    // Verifica se o arquivo de imagem foi enviado
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $fileData = file_get_contents($file);
+        $base64 = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode($fileData);
+
+        // Atualizar o Firebase com a nova imagem
+        $this->database->getReference($this->tablename . '/' . $id)->update([
+            'image_b64' => $base64,
+        ]);
+    }
+
+    // Redireciona com a mensagem de sucesso
+    return [
+        'status' => 'success',
+        'message' => 'Imagem atualizada com sucesso.',
+    ];
+}
+
 
 }

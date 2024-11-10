@@ -43,7 +43,6 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         $validated = $request->validated(); // Obtém os dados validados
-
         $cpf = $validated['cpf'];
         $password = $validated['password'];
 
@@ -187,5 +186,16 @@ public function updatePassword(Request $req, $id)
     return response()->json($result);
 }
 
+public function updateImage( Request $request, $id)
+{
+    // Chamar a função updateImage do UserService
+    $response = $this->userService->updateImage($request, $id);
+
+    // Retornar a resposta
+    return response()->json($response);
+}
+
+public function updateImageView(){
+    return view('imageupdate');}
 
 }
