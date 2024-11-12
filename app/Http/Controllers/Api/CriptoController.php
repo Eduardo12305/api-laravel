@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CriptoRequest;
-use App\Http\Requests\LoginRequest;
 use App\Services\CriptoService;
-use Illuminate\Http\Request;
 
 class CriptoController extends Controller
 {

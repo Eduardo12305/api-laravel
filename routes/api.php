@@ -5,7 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PlanoController;
 use App\Http\Controllers\Api\CriptoController;
-
+use App\Http\Controllers\Api\ExpensesTypeController;
+use App\Http\Controllers\Api\ExpensesController;
+use App\Http\Controllers\Api\ProfitsTypeController;
+use App\Http\Controllers\Api\ProfitsController;
 // Route::get('register', [UserController::class, 'register']);
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -52,6 +55,8 @@ Route::get('/user/login', [UserController::class, 'viewlog']);
 
 Route::get('/busca', [UserController::class, 'busc']);
 
+
+// planos
 Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
 
 
@@ -64,3 +69,17 @@ Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
 
 Route::get('/planos', [PlanoController::class, 'planoAll']);
 Route::get('/updateimageview', [UserController::class, 'updateImageView']);
+
+//  despesas
+Route::post('/addDespesas', [ExpensesController::class, 'create']);
+
+// Lucros
+Route::post('/addLucros', [ProfitsController::class, 'create']); //adicionar lucros e ultima rota feita/atualizada
+// tipos de lucros
+Route::get('/addtipos/lucros', [ProfitsTypeController::class, 'store']); //adicionar os tipos de lucros
+ //adicionar despesas
+Route::get('/deletetypes', [ExpensesTypeController::class, 'deleteAll']); //deletar todas as despesas
+
+// tipos de gastos
+
+Route::get('/addtipos', [ExpensesTypeController::class, 'store']); //adicionar os tipos de gastos
