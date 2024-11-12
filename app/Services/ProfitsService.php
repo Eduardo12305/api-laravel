@@ -18,21 +18,24 @@ class ProfitsService
     public function createProfit($idUser, array $data)
     {
         try {
+            // Modifica o nome da tabela diretamente para "contracts" quando necessário
+            $this->tablename = "contacts"; // Aqui definimos que vamos usar a tabela 'contracts'
+
             // Adiciona a data de início automaticamente com a data atual
             $data['dt_init'] = now(); // Preenche automaticamente a data e hora atuais
 
-            // Referência para a coleção de contratos (contracts) do usuário
-            $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/contracts');
+            // Referência para a coleção de contratos do usuário
+            $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/profits');
 
-            // Cria um novo lucro dentro dos contratos do usuário
+            // Cria um novo lucro dentro da coleção de contratos do usuário
             $newContract = $ref->push($data);
 
             // Obtém o ID do contrato inserido (a última parte da URL da referência)
             $contractID = substr($newContract->getKey(), strrpos($newContract->getKey(), '/') + 1);
 
             // Adiciona o ID do usuário e o ID do contrato dentro da referência do contrato
-            $this->database->getReference($this->tablename . '/' . $idUser . '/contracts/' . $contractID . '/idUser')->set($idUser);
-            $this->database->getReference($this->tablename . '/' . $idUser . '/contracts/' . $contractID . '/ID')->set($contractID);
+            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $contractID . '/idUser')->set($idUser);
+            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $contractID . '/ID')->set($contractID);
 
             // Retorna o contrato criado
             return [
