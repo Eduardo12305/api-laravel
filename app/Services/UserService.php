@@ -364,5 +364,26 @@ class UserService
     ];
 }
 
+public function checkUserExistence($idUser)
+{
+    // Referência ao usuário no Firebase
+    $reference = $this->database->getReference($this->tablename . '/' . $idUser);
+
+    // Obtém o snapshot do usuário
+    $user = $reference->getSnapshot();
+
+    // Verifica se o usuário existe
+    if (!$user->exists()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Usuário não encontrado.',
+        ], 404); // Retorna o erro 404 se o usuário não existir
+    }
+
+    // Retorna true se o usuário existir
+    return true;
+}
+
+
 
 }
