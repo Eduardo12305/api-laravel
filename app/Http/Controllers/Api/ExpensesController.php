@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpensesRequest ;
 use App\Services\ExpensesService;
+use App\Http\Requests\IdRequest;
 
 class ExpensesController extends Controller
 {
@@ -27,9 +28,9 @@ class ExpensesController extends Controller
         ], 201);
     }
 
-    public function index()
+    public function index($idUser)
     {
-        $expenses = $this->expenseService->list();
+        $expenses = $this->expenseService->list($idUser);
 
         return response()->json([
             'success' => true,
@@ -49,9 +50,10 @@ class ExpensesController extends Controller
     }
 
     
-    public function destroy($id)
+    public function destroy(IdRequest $idDelete, $id)
     {
-        $this->expenseService->delete($id);
+        $idDelete = $idDelete->validated();
+        $this->expenseService->delete($idDelete,$id);
 
         return response()->json([
             'success' => true,

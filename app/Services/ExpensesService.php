@@ -12,17 +12,18 @@ class ExpensesService
     public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->tablename = "expenses"; // Nome da tabela no Firebase
+        $this->tablename = "contacts"; // Nome da tabela no Firebase
     }
 
     public function createExpense(array $data)
     {
         try {
             // Adiciona a data de início automaticamente com a data atual
-            $data['dt_start'] = now(); // Preenche automaticamente a data de início com a data e hora atuais
-            
+            $data['dt_init'] = now(); // Preenche automaticamente a data de início com a data e hora atuais
+            $data['dt_update'] = now(); // Preenche automaticamente a data de atualização com a data e hora atuais
+            $idUser = $data['idUser']; // Obtém o ID do usuário
             // Referência para a coleção de despesas no Firebase
-            $ref = $this->database->getReference('expenses');
+            $ref = $this->database->getReference($this->tablename . '/' . $idUser. '/expenses');
             $newExpense = $ref->push($data); // Adiciona a despesa na coleção
 
             return $newExpense->getValue(); // Retorna a despesa criada
@@ -31,11 +32,11 @@ class ExpensesService
         }
     }
 
-    public function list()
+    public function list($idUser)
     {
         try {
             // Referência para a coleção de despesas no Firebase
-            $ref = $this->database->getReference('expenses');
+            $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/expenses');
             $expenses = $ref->getValue(); // Obtém todas as despesas
 
             return $expenses ? $expenses : []; // Retorna as despesas ou um array vazio
@@ -47,7 +48,8 @@ class ExpensesService
     public function update($id, array $data)
     {
         try {
-            $ref = $this->database->getReference('expenses/' . $id); // Referência para a despesa específica
+            $idUser = $data['idUser']; // Obtém o ID do usuário
+            $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/expenses/' . $id); // Referência para a despesa específica
             $ref->update($data); // Atualiza os dados da despesa
 
             return $ref->getValue(); // Retorna a despesa atualizada
@@ -57,10 +59,11 @@ class ExpensesService
     }
 
    
-    public function delete($id)
+    public function delete(array $idDelete,$id)
     {
         try {
-            $ref = $this->database->getReference('expenses/' . $id); // Referência para a despesa específica
+            $idUser = $idDelete['idUser']; // Obtém o ID do usuário
+            $ref = $this->database->getReference($this->tablename.'/'.$idUser.'/expenses/' . $id); // Referência para a despesa específica
             $ref->remove(); // Deleta a despesa
         } catch (DatabaseException $e) {
             throw new \Exception("Erro ao deletar despesa: " . $e->getMessage());

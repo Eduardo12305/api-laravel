@@ -27,7 +27,8 @@ class  ProfitsResquest extends FormRequest
             'name' => 'required|string',
             'value' => 'required|numeric',
             'appellant' => 'required|string',
-            'dt_init' => 'required|date',
+            'dt_init' => 'date|nullable',
+            'dt_update' => 'date|nullable',
         ];
     }
 

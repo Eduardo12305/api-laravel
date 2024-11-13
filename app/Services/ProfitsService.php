@@ -23,6 +23,7 @@ class ProfitsService
 
             // Adiciona a data de início automaticamente com a data atual
             $data['dt_init'] = now(); // Preenche automaticamente a data e hora atuais
+            $data['dt_update'] = now();
 
             // Referência para a coleção de contratos do usuário
             $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/profits');
@@ -77,6 +78,7 @@ class ProfitsService
         try {
             $this->tablename = "contacts";
             $idUser = $data['idUser'];
+            $data['dt_update'] = now(); // Preenche automaticamente a data e hora atuais
             $ref = $this->database->getReference($this->tablename . '/'. $idUser . '/profits/' . $id ); // Referência para a despesa específica
             $ref->update($data); // Atualiza os dados da lucro
 

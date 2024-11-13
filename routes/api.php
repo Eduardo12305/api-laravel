@@ -70,11 +70,11 @@ Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
 Route::get('/planos', [PlanoController::class, 'planoAll']);
 Route::get('/updateimageview', [UserController::class, 'updateImageView']);
 
-//  despesas
-Route::post('/addDespesas', [ExpensesController::class, 'create']); //check
-Route::get('/getDespesas', [ExpensesController::class, 'index']); //check
-Route::put('/updateDespesas/{id}', [ExpensesController::class, 'update']); //check 
-Route::delete('/deleteDespesas/{id}', [ExpensesController::class, 'destroy']); //check
+//  despesas ou Expenses
+Route::post('/addDespesas', [ExpensesController::class, 'create']); // ok
+Route::get('/getDespesas/{id}', [ExpensesController::class, 'index']); //ok
+Route::put('/updateDespesas/{id}', [ExpensesController::class, 'update']); //ok 
+Route::delete('/deleteDespesas/{id}', [ExpensesController::class, 'destroy']); //ok
 
 // Lucros
 Route::post('/addLucros', [ProfitsController::class, 'create']); //adicionar lucros e ultima rota feita/atualizada  Check
