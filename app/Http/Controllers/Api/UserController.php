@@ -191,6 +191,12 @@ public function updatePassword(Request $req, $id)
     // Caso a atualização tenha sido bem-sucedida
     return response()->json($result);
 }
+public function updateMoeda( Request $request, $id)
+{
+    // Chamar a função updateImage do UserService
+    $response = $this->userService->updateMoeda($request, $id);
+
+}
 
 public function updateImage( Request $request, $id)
 {

@@ -142,6 +142,8 @@ class UserService
                 'message' => 'Plano inválido'
             ];
         }
+
+        $register['moeda'] = null;
         
         
         // Detalhes do plano adicionados
@@ -328,6 +330,25 @@ class UserService
         }
 
         return ['message' => 'Senha atualizado com sucesso'];
+
+    }
+
+    public function updateMoeda(Request $request, $id){
+
+        $reference = $this->database->getReference($this->tablename . '/' . $id);
+        $user = $reference->getSnapshot();
+
+        if ($user->exists()) {
+            $reference->update([
+                'moeda' => $request->moeda,
+            ]);
+            return response()->json([
+                'status' => 'success',
+            ], 201);
+        }
+        return reponse()->json([
+            'status' => 'error',
+        ], 400);
 
     }
 
