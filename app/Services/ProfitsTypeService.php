@@ -12,7 +12,7 @@ class ProfitsTypeService
     public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->tablename = "profits"; // Nome da tabela no Firebase
+        $this->tablename = "TypeProfits"; // Nome da tabela no Firebase
     }
 
     public function addTypeProfits()
@@ -47,7 +47,7 @@ class ProfitsTypeService
         ];
 
         foreach ($types as $key => $type) {
-            $this->database->getReference('profits/' . $key)->set($type);
+            $this->database->getReference('type_profits/' . $key)->set($type);
         }
 
         return response()->json(['status' => 'success', 'message' => 'Tipos de lucros cadastrados com sucesso.'], 201);

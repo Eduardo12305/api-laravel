@@ -51,23 +51,33 @@ class ProfitsService
 
     
 
-    public function list()
-    {
-        try {
-            // Referência para a coleção de lucro no Firebase
-            $ref = $this->database->getReference('profits');
-            $profits = $ref->getValue(); // Obtém todas as lucro
+    public function list($idUser)
+{
+    try {
+        // Modifica o nome da tabela para "contracts", conforme usado no createProfit
+        $this->tablename = "contacts"; // Tabela 'contracts'
 
-            return $profits ? $profits : []; // Retorna as lucro ou um array vazio
-        } catch (DatabaseException $e) {
-            throw new \Exception("Erro ao listar lucros: " . $e->getMessage());
-        }
+        // Referência para a coleção de lucros (profits) de um usuário específico
+        $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/profits');
+
+        // Obtém todos os lucros (profits) associados ao usuário
+        $profits = $ref->getValue();
+
+        // Retorna os lucros ou um array vazio, caso não existam lucros
+        return $profits ? $profits : [];
+    } catch (DatabaseException $e) {
+        // Em caso de erro, lança uma exceção
+        throw new \Exception("Erro ao listar lucros: " . $e->getMessage());
     }
+}
+
 
     public function update($id, array $data)
     {
         try {
-            $ref = $this->database->getReference('expenses/' . $id); // Referência para a despesa específica
+            $this->tablename = "contacts";
+            $idUser = $data['idUser'];
+            $ref = $this->database->getReference($this->tablename . '/'. $idUser . '/profits/' . $id ); // Referência para a despesa específica
             $ref->update($data); // Atualiza os dados da lucro
 
             return $ref->getValue(); // Retorna a lucro atualizada
@@ -77,10 +87,12 @@ class ProfitsService
     }
 
    
-    public function delete($id)
+    public function delete(array $idDelete,$id)
     {
         try {
-            $ref = $this->database->getReference('expenses/' . $id); // Referência para a despesa específica
+            $this->tablename = "contacts";
+            $idUser = $idDelete['idUser'];
+            $ref = $this->database->getReference($this->tablename. '/'. $idUser.'/profits/'. $id); // Referência para a despesa específica
             $ref->remove(); // Deleta a lucro
         } catch (DatabaseException $e) {
             throw new \Exception("Erro ao deletar lucro: " . $e->getMessage());

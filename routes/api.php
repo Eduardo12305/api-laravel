@@ -71,10 +71,16 @@ Route::get('/planos', [PlanoController::class, 'planoAll']);
 Route::get('/updateimageview', [UserController::class, 'updateImageView']);
 
 //  despesas
-Route::post('/addDespesas', [ExpensesController::class, 'create']);
+Route::post('/addDespesas', [ExpensesController::class, 'create']); //check
+Route::get('/getDespesas', [ExpensesController::class, 'index']); //check
+Route::put('/updateDespesas/{id}', [ExpensesController::class, 'update']); //check 
+Route::delete('/deleteDespesas/{id}', [ExpensesController::class, 'destroy']); //check
 
 // Lucros
-Route::post('/addLucros', [ProfitsController::class, 'create']); //adicionar lucros e ultima rota feita/atualizada
+Route::post('/addLucros', [ProfitsController::class, 'create']); //adicionar lucros e ultima rota feita/atualizada  Check
+Route::get('/getLucros/{id}', [ProfitsController::class, 'index']); //listar lucros Check
+Route::put('/updateLucros/{id}', [ProfitsController::class, 'update']); //atualizar lucros  Check
+Route::delete('/deleteLucros/{id}', [ProfitsController::class, 'destroy']); //deletar lucros Check
 // tipos de lucros
 Route::get('/addtipos/lucros', [ProfitsTypeController::class, 'store']); //adicionar os tipos de lucros
  //adicionar despesas
