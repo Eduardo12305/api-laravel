@@ -30,6 +30,7 @@ class ExpensesRequest extends FormRequest
             'appellant' => 'required|string',
             'dt_init' => 'date|nullable',
             'dt_update' => 'date|nullable',
+            'icon' => 'required|string',
         ];
     }
 
@@ -42,6 +43,7 @@ class ExpensesRequest extends FormRequest
             'value.required'     => 'O campo value é obrigatório.',
             'appellant.required' => 'O campo appellant é obrigatório.',
             'dt_end.required'    => 'O campo dt_end é obrigatório.',
+            'icon.required'      => 'O campo icon é obrigatório.',
         ];
     }
 }

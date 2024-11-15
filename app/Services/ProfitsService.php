@@ -29,20 +29,20 @@ class ProfitsService
             $ref = $this->database->getReference($this->tablename . '/' . $idUser . '/profits');
 
             // Cria um novo lucro dentro da coleção de contratos do usuário
-            $newContract = $ref->push($data);
+            $newProfits = $ref->push($data);
 
             // Obtém o ID do contrato inserido (a última parte da URL da referência)
-            $contractID = substr($newContract->getKey(), strrpos($newContract->getKey(), '/') + 1);
+            $profitsID = substr($newProfits->getKey(), strrpos($newProfits->getKey(), '/') + 1);
 
             // Adiciona o ID do usuário e o ID do contrato dentro da referência do contrato
-            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $contractID . '/idUser')->set($idUser);
-            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $contractID . '/ID')->set($contractID);
+            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $profitsID . '/idUser')->set($idUser);
+            $this->database->getReference($this->tablename . '/' . $idUser . '/' . $profitsID . '/ID')->set($profitsID);
 
             // Retorna o contrato criado
             return [
                 'status' => 'success',
-                'ID' => $contractID,
-                'contract' => $newContract->getValue() // Retorna os dados do contrato criado
+                'ID' => $profitsID,
+                'contract' => $newProfits->getValue() // Retorna os dados do contrato criado
             ];
         } catch (DatabaseException $e) {
             // Em caso de erro, lança uma exceção
