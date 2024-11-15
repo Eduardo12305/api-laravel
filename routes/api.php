@@ -59,7 +59,7 @@ Route::get('/busca', [UserController::class, 'busc']);
 
 
 // planos
-Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os planos
+Route::post('/addplano', [PlanoController::class, 'store']); //adicionar os planos
 
 
 Route::get('/planos/all', [PlanoController::class, 'planoAll']);

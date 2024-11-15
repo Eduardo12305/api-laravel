@@ -19,8 +19,8 @@ class PlanoService {
     public function addPlano(array $data)
 {
     try{
-        $ref = $this->database->getReference('planos/' . $data['id']);
-        $newPlan = $ref->set($data);
+        $ref = $this->database->getReference($this->tablename . '/');
+        $newPlan = $ref->push($data);
         return [
             'status' => 'success',
             'ID' => $newPlan->getKey(),

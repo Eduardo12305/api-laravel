@@ -18,8 +18,7 @@ class PlanoController extends Controller
     }
 
     public function store(planoRequest $req){
-        $data = $req->validated();
-        $plan = $data->all();
+        $plan = $req->validated();
         $response = $this->planoService->addPlano($plan);
         return response()->json($response);
     }
