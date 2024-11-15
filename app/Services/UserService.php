@@ -365,23 +365,16 @@ class UserService
             'message' => 'Usuário não encontrado.'
         ], 400);
     }
-
+    if ($request->image != null) {
     // Verifica se o arquivo de imagem foi enviado
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $fileData = file_get_contents($file);
-        $base64 = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode($fileData);
-
         // Atualizar o Firebase com a nova imagem
         $this->database->getReference($this->tablename . '/' . $id)->update([
-            'image_b64' => $base64,
+            'image_b64' => $request->image,
         ]);
     }
-
     // Redireciona com a mensagem de sucesso
     return response()->json([
         'status' => 'success',
-        'image' => $base64,
     ], 201);
 }
 
