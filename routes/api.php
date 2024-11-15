@@ -64,7 +64,7 @@ Route::post('/addplano', [PlanoController::class, 'store']); //adicionar os plan
 
 Route::get('/planos/all', [PlanoController::class, 'planoAll']);
 
-Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
+Route::post('/change-plan/{planId}', [PlanoController::class, 'changePlan']);
 
 Route::get('/planos', [PlanoController::class, 'planoAll']);
 Route::get('/updateimageview', [UserController::class, 'updateImageView']);

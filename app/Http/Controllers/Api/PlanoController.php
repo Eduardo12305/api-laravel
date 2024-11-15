@@ -54,23 +54,10 @@ public function planoAll(): JsonResponse
 }
 
 
-public function changeUserPlan($planId, $confirmation): JsonResponse {
-    if (!$confirmation) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Confirmação necessária para mudar o plano.'
-        ], 400);
-    }
+public function changePlan($planId, planoRequest $data): JsonResponse {
 
-    $userId = Auth::id();
-    if (!$userId) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Usuário não autenticado.'
-        ], 401);
-    }
-
-    $result = $this->planoService->changeUserPlan($userId, $planId);
+    $data = $data->validated();
+    $result = $this->planoService->changePlan( $planId, $data);
 
     return response()->json($result, $result['status'] === 'success' ? 200 : 500);
 }
