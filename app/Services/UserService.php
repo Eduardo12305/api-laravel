@@ -363,7 +363,7 @@ class UserService
         return response()->json([
             'status' => 'error',
             'message' => 'Usuário não encontrado.'
-        ], 404);
+        ], 400);
     }
 
     // Verifica se o arquivo de imagem foi enviado
@@ -379,10 +379,10 @@ class UserService
     }
 
     // Redireciona com a mensagem de sucesso
-    return [
+    return response()->json([
         'status' => 'success',
-        'message' => 'Imagem atualizada com sucesso.',
-    ];
+        'image' => $base64,
+    ], 201);
 }
 
 public function checkUserExistence($idUser)
@@ -398,7 +398,7 @@ public function checkUserExistence($idUser)
         return response()->json([
             'status' => 'error',
             'message' => 'Usuário não encontrado.',
-        ], 404); // Retorna o erro 404 se o usuário não existir
+        ], 400); // Retorna o erro 404 se o usuário não existir
     }
 
     // Retorna true se o usuário existir
