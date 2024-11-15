@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CriptoRequest extends FormRequest
+class planoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,12 +22,14 @@ class CriptoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'uid' => 'required|string',
-            'idCripto' => 'string',
-            'cripto.Nome' => 'string',
-            'cripto.Quantidade' => 'numeric',
-            'cripto.Cor' => 'string',
-            'cripto.Codigo' => 'string'
+            "name" => "required|string",
+            "value" => "required|numeric",
+            "qtd_types_profits" => "required|numeric",
+            "qtd_types_expenses" => "required|numeric",
+            "exchange_coin" => "required|string",
+            "exchange_cryptos" => "required|string",
+            "income_forecast" => "required|numeric",
+            "grafics" => "required|boolean",
         ];
     }
 }

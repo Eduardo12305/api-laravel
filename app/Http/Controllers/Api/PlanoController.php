@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\PlanoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\planoRequest;
 
 class PlanoController extends Controller
 {
@@ -16,9 +17,11 @@ class PlanoController extends Controller
         $this->planoService = $planoService;
     }
 
-    public function store(){
-        $response = $this->planoService->addPlanos();
-        return response()->json();
+    public function store(planoRequest $req){
+        $data = $req->validated();
+        $plan = $data->all();
+        $response = $this->planoService->addPlano($plan);
+        return response()->json($response);
     }
 
     public function getPlano($id)

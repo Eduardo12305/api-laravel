@@ -64,9 +64,6 @@ Route::get('/addplano', [PlanoController::class, 'store']); //adicionar os plano
 
 Route::get('/planos/all', [PlanoController::class, 'planoAll']);
 
-Route::delete('/end', [PlanoController::class, 'deleteAll']);
-
-
 Route::post('/change-plan', [PlanoController::class, 'changeUserPlan']);
 
 Route::get('/planos', [PlanoController::class, 'planoAll']);

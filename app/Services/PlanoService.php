@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
+use Kreait\Firebase\Exception\DatabaseException;
 
 class PlanoService {
     protected $database;
@@ -15,50 +16,19 @@ class PlanoService {
         $this->tablename = "planos"; // Nome da tabela no Firebase
 
     }
-    public function addPlanos()
+    public function addPlano(array $data)
 {
-    // Verifica se já existem planos
-    $existingPlansSnapshot = $this->database->getReference('planos')->getSnapshot();
-
-    if ($existingPlansSnapshot->exists()) {
-        return response()->json(['status' => 'error', 'message' => 'Já existem planos cadastrados.'], 400);
+    try{
+        $ref = $this->database->getReference('planos/' . $data['id']);
+        $newPlan = $ref->set($data);
+        return [
+            'status' => 'success',
+            'ID' => $newPlan->getKey(),
+            'plan' => $newPlan->getValue()
+        ];
+    }catch (DatabaseException $e) {
+        throw new \Exception("Erro ao criar plano: " . $e->getMessage());
     }
-
-    $plans = [
-        '0' => [
-            'nome' => 'Plano Gratuito',
-            'valor' => 0,
-            'qt_tipos_gastos' => 5,
-            'intervalo_cambio_moedas' => '1 hora',
-            'intervalo_cambio_criptomoedas' => '1 hora',
-            'previsao_renda' => 6,
-            'graficos_avancados' => false
-        ],
-        '1' => [
-            'nome' => 'Plano Básico',
-            'valor' => 29.90,
-            'qt_tipos_gastos' => 10,
-            'intervalo_cambio_moedas' => '30 minutos',
-            'intervalo_cambio_criptomoedas' => '30 minutos',
-            'previsao_renda' => 12,
-            'graficos_avancados' => true
-        ],
-        '2' => [
-            'nome' => 'Plano Premium',
-            'valor' => 49.90,
-            'qt_tipos_gastos' => 20,
-            'intervalo_cambio_moedas' => '15 minutos',
-            'intervalo_cambio_criptomoedas' => '15 minutos',
-            'previsao_renda' => 24,
-            'graficos_avancados' => true
-        ],
-    ];
-
-    foreach ($plans as $id => $plan) {
-        $this->database->getReference('planos/' . $id)->set($plan);
-    }
-
-    return response()->json(['status' => 'success', 'message' => 'Planos adicionados com sucesso!']);
 }
 
 
