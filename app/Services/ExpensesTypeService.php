@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Kreait\Firebase\Contract\Database;
-
+use Kreait\Firebase\Exception\DatabaseException;
 class ExpensesTypeService
 {
     protected $database;
@@ -13,108 +13,56 @@ class ExpensesTypeService
     public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->tablename = "tipos_gastos"; // Nome da tabela no Firebase
+        $this->tablename = "contacts"; // Nome da tabela no Firebase
     }
 
-    public function addTypes()
+    public function addType(array $data)
     {
-        // Verifica se já existem tipos de gastos
-        $existingTypesSnapshot = $this->database->getReference('tipos_gastos')->getSnapshot();
-
-        if ($existingTypesSnapshot->exists()) {
-            return response()->json(['status' => 'error', 'message' => 'Já existem tipos de gastos cadastrados.'], 400);
+        try {
+            $idUser = $data['idUser'];
+            $ref = $this->database->getReference($this->tablename.'/'.$idUser . '/type_expenses');
+            unset($data['idUser']);
+            $newType = $ref->push($data);
+            return [
+                'status' => 'success',
+                'ID' => $newType->getKey(),
+                'type_expenses' => $newType->getValue()
+            ];
+        } catch (DatabaseException $e) {
+            throw new \Exception("Erro ao criar tipo de gasto: " . $e->getMessage());
         }
-
-        $types = [
-            '0' => [
-                'nome' => 'Alimentação',
-                'descrição' => 'Despesas com alimentação',
-                'cor' => '#FF0000'
-            ],
-            '1' => [
-                'nome' => 'Transporte',
-                'descrição' => 'Depesas com transporte',
-                'cor' => '#00FF00'
-            ],
-            '2' => [
-                'nome' => 'Moradia',
-                'descrição' => 'Despesas com moradia',
-                'cor' => '#0000FF'
-            ],
-            '3' => [
-                'nome' => 'Educação',
-                'icone' => 'Despesas com educação',
-                'cor' => '#FFFF00'
-            ],
-            '4' => [
-                'nome' => 'Saúde',
-                'descrição' => 'Despesas com saúde',
-                'cor' => '#00FFFF'
-            ],
-            '5' => [
-                'nome' => 'Lazer',
-                'descrição' => 'Despesas com lazer',
-                'cor' => '#FF00FF'
-            ],
-            '6' => [
-                'nome' => 'Outros',
-                'descrição' => 'Despesas diversas',
-                'cor' => '#000000'
-            ],
-        ];
-
-        foreach ($types as $id => $type) {
-            $this->database->getReference('tipos_gastos/' . $id)->set($type);
-        }
-
-        return response()->json(['status' => 'success', 'message' => 'Tipos de gastos cadastrados com sucesso.'], 200);
     }
 
-    public function getTypeById($id)
+    public function getAllTypes($idUser)
     {
-        $reference = $this->database->getReference('tipos_gastos/' . $id);
-        $snapshot = $reference->getSnapshot();
+        $ref = $this->database->getReference($this->tablename.'/'.$idUser . '/type_expenses');
+        $types = $ref->getValue();
 
-        return $snapshot->exists() ? $snapshot->getValue() : null;
-    }
-
-    public function getAllTypes()
-    {
-        $reference = $this->database->getReference('tipos_gastos');
-        $snapshot = $reference->getSnapshot();
-
-        return $snapshot->exists() ? $snapshot->getValue() : null;
+        return $types ? $types : ['message' => 'Nenhum tipo de gasto encontrado.'];
     }
 
     public function updateType($id, $data)
     {
-        $reference = $this->database->getReference('tipos_gastos/' . $id);
-        $reference->update($data);
-
-        return response()->json(['status' => 'success', 'message' => 'Tipo de gasto atualizado com sucesso.'], 200);
+        try {
+            $idUser = $data['idUser'];
+            $reference = $this->database->getReference($this->tablename. '/' . $idUser . '/type_expenses/' . $id);
+            unset($data['idUser']);
+            $reference->update($data);
+            return response()->json(['status' => 'success', 'message' => 'Tipo de gasto atualizado com sucesso.'], 200);
+        } catch (DatabaseException $e) {
+            throw new \Exception("Erro ao atualizar tipo de gasto: " . $e->getMessage());
+        }
+        
     }
 
-    public function deleteType($id)
+    public function deleteType($id, $idUser)
     {
-        $reference = $this->database->getReference('tipos_gastos/' . $id);
+        $reference = $this->database->getReference($this->tablename.'/'.$idUser . '/type_expenses');
+        if (!$reference->getSnapshot()->exists()) {
+            return response()->json(['status' => 'error', 'message' => 'Tipo de gasto não encontrado.'], 404);
+        }
         $reference->remove();
 
         return response()->json(['status' => 'success', 'message' => 'Tipo de gasto removido com sucesso.'], 200);
-    }
-    
-    public function changeUserType($id, $data)
-    {
-        $reference = $this->database->getReference('tipos_gastos/' . $id);
-        $reference->update($data);
-
-        return response()->json(['status' => 'success', 'message' => 'Tipo de gasto atualizado com sucesso.'], 200);
-    }
-
-    public function deleteAllTypes()
-    {
-        $reference = $this->database->getReference('tipos_gastos');
-        $reference->remove();
-
-        return response()->json(['status' => 'success', 'message' => 'Todos os tipos de gastos foram removidos com sucesso.'], 200);
     }
 }

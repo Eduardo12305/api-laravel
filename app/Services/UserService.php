@@ -346,7 +346,7 @@ class UserService
                 'status' => 'success',
             ], 201);
         }
-        return reponse()->json([
+        return response()->json([
             'status' => 'error',
         ], 400);
 

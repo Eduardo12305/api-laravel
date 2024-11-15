@@ -70,7 +70,7 @@ class ExpensesController extends Controller
     public function destroy(IdRequest $idDelete, $id)
     {
         $idDelete = $idDelete->validated();
-        $userExists = $this->UserService->checkUserExistence($idDelete['idUser']); 
+        $userExists = $this->UserService->checkUserExistence($idDelete['id']); 
 
         if ($userExists instanceof \Illuminate\Http\JsonResponse) {
             return $userExists; // Retorna a resposta de erro caso o usuário não exista

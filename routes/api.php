@@ -76,18 +76,22 @@ Route::get('/updateimageview', [UserController::class, 'updateImageView']);
 Route::post('/addDespesas', [ExpensesController::class, 'create']); // ok
 Route::get('/getDespesas/{id}', [ExpensesController::class, 'index']); //ok
 Route::put('/updateDespesas/{id}', [ExpensesController::class, 'update']); //ok 
-Route::delete('/deleteDespesas/{id}', [ExpensesController::class, 'destroy']); //ok
+Route::delete('/deleteDespesas', [ExpensesController::class, 'destroy']); //ok
 
 // Lucros
 Route::post('/addLucros', [ProfitsController::class, 'create']); //adicionar lucros e ultima rota feita/atualizada  Check
 Route::get('/getLucros/{id}', [ProfitsController::class, 'index']); //listar lucros Check
 Route::put('/updateLucros/{id}', [ProfitsController::class, 'update']); //atualizar lucros  Check
 Route::delete('/deleteLucros/{id}', [ProfitsController::class, 'destroy']); //deletar lucros Check
+
 // tipos de lucros
-Route::get('/addtipos/lucros', [ProfitsTypeController::class, 'store']); //adicionar os tipos de lucros
- //adicionar despesas
-Route::get('/deletetypes', [ExpensesTypeController::class, 'deleteAll']); //deletar todas as despesas
+Route::post('/addTipo/lucro', [ProfitsTypeController::class, 'store']); //adicionar os tipos de lucros  Check
+Route::get('/getTipo/lucros/{idUser}', [ProfitsTypeController::class, 'index']); //listar os tipos de lucros Check
+Route::put('/updateTipo/lucros/{id}', [ProfitsTypeController::class, 'update']); //atualizar os tipos de lucros Check
+Route::delete('/deleteTipo/lucros/{idUser}', [ProfitsTypeController::class, 'destroy']); //deletar os tipos de lucros Check
 
 // tipos de gastos
-
-Route::get('/addtipos', [ExpensesTypeController::class, 'store']); //adicionar os tipos de gastos
+Route::post('/addtipo/despesa', [ExpensesTypeController::class, 'store']); //adicionar os tipos de gastos Check
+Route::get('/gettipo/despesa/{idUser}', [ExpensesTypeController::class, 'index']); //listar os tipos de gastos Check
+Route::put('/updatetipo/despesa/{id}', [ExpensesTypeController::class, 'update']); //atualizar os tipos de gastos Check
+Route::delete('/deletetipo/despesa/{idUser}', [ExpensesTypeController::class, 'destroy']); //deletar os tipos de gastos Check
