@@ -84,7 +84,6 @@ class UserService
         $role = $register['role'] ?? 'cliente';
         
         
-        
         // Validação do cpf
         if (!$this->isValidCPF($cpf)) {
             return response()->json([
@@ -133,7 +132,7 @@ class UserService
             $register['image_b64'] = $base64;
         }
         
-        $planId = $register['id_plano'] ?? 0;
+        $planId = $register['id_plano'] ?? "-OBm4oa2JmrUNklhRlps";
         $planDetails = $this->planoService->getPlanById($planId);
         
         if(!$planDetails){

@@ -113,5 +113,14 @@ class PlanoService {
         ];
     }
 
-    
+    public function changePlanUser($idUser, $plano_update){
+        // dd($idUser, $plano_id, $plano_update);
+        $this->database->getReference('contacts' . '/' . $idUser)->update(['id_plano' => $plano_update]);
+        return [
+            'status' => 'success',
+            'message' => 'Plano do usuário alterado com sucesso.',
+            
+        ];
+        // dd($userReference);
+    }
 }

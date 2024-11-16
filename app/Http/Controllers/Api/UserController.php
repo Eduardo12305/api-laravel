@@ -9,17 +9,20 @@ use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
-
+use App\Services\PlanoService;
+use App\Http\Requests\IdRequest;
 class UserController extends Controller
 {
 
     protected $userService;
+    protected $PlanoService;
     protected $tablename;
 
 
-    public function __construct(UserService $userService){
+    public function __construct(UserService $userService, PlanoService $PlanoService){
         $this->userService = $userService;
         $this->tablename = "contacts"; // Nome da tabela no Firebase
+        $this->PlanoService = $PlanoService;
 
     }
 
@@ -207,7 +210,12 @@ public function updateImage( Request $request, $id)
     return response()->json($response);
 }
 
-public function updateImageView(){
-    return view('imageupdate');}
+public function updatePlano($idUser, IdRequest $data){
+    $plano_update = $data->plano_update;
 
+    $response = $this->PlanoService->changePlanUser($idUser, $plano_update);
+
+    return response()->json($response);
 }
+}
+

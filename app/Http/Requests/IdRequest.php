@@ -22,7 +22,8 @@ class IdRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|string',
+            'id' => 'nullable|string',
+            'plano_update' => 'nullable|string',
         ];
     }
 }
