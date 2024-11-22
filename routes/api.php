@@ -36,11 +36,11 @@ Route::put('/user/{id}/update-moeda', [UserController::class, 'updateMoeda']);
 
 Route::post('/user/{id}/update-image', [UserController::class, 'updateImage']);
 // Cripto
-Route::post('addCripto', [CriptoController::class, 'addCripto']);
-Route::post('getCripto', [CriptoController::class, 'getCripto']);
-Route::post('getAllCripto', [CriptoController::class, 'getAllCripto']);
-Route::put('updCripto', [CriptoController::class, 'updCripto']);
-Route::delete('dltCripto', [CriptoController::class, 'dltCripto']);
+Route::post('/addCripto', [CriptoController::class, 'addCripto']);
+Route::post('/getCripto', [CriptoController::class, 'getCripto']);
+Route::post('/getAllCripto', [CriptoController::class, 'getAllCripto']);
+Route::put('/updCripto', [CriptoController::class, 'updCripto']);
+Route::delete('/dltCripto', [CriptoController::class, 'dltCripto']);
 
 // busca de ususarios
 Route::get('/busca', [UserController::class, 'busc']);

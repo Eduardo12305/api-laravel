@@ -30,6 +30,7 @@ class ExpensesRequest extends FormRequest
             'appellant' => 'required|string',
             'dt_init' => 'date|nullable',
             'dt_update' => 'date|nullable',
+            'dt_end' => 'date|nullable',
             'icon' => 'required|string',
         ];
     }
